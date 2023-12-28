@@ -1,0 +1,11 @@
+{"zero": 0, "one": 1, "three": 3, "iter": 9}
+count = add zero three
+pred = add zero one
+fib = add zero one
+aux = add zero fib
+fib = add pred fib
+pred = add zero aux
+count = add count one
+repeat = geq iter count
+bt repeat 3
+end = add zero zero
