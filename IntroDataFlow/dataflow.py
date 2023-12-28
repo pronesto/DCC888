@@ -223,9 +223,8 @@ class LivenessAnalysisIN_Eq(IN_Eq):
             >>> sorted(df.eval_aux({'OUT_0': {'x'}}))
             ['a', 'b']
         """
-        out_name = name_out(self.inst.ID)
-        solution = data_flow_env[out_name] - self.inst.definition()
-        return solution.union(self.inst.uses())
+        # TODO: implement this method
+        return None
 
     def __str__(self):
         """
@@ -258,10 +257,8 @@ class LivenessAnalysisOUT_Eq(OUT_Eq):
             >>> sorted(df.eval_aux({'IN_0': {('c'), ('d')}, 'IN_1': {('a')}}))
             ['a', 'c', 'd']
         """
-        solution = set()
-        for inst in self.inst.nexts:
-            solution = solution.union(data_flow_env[name_in(inst.ID)])
-        return solution
+        # TODO: implement this method
+        return None
 
     def __str__(self):
         """
@@ -316,9 +313,8 @@ def liveness_constraint_gen(insts):
         >>> sol[0] + " " + sol[1]
         "IN_0: (OUT_0 - {'c'}) + ['a', 'b'] IN_1: (OUT_1 - {'d'}) + ['a', 'c']"
     """
-    in_eqs = [LivenessAnalysisIN_Eq(inst) for inst in insts]
-    out_eqs = [LivenessAnalysisOUT_Eq(inst) for inst in insts]
-    return in_eqs + out_eqs
+    # TODO: implement this method.
+    return None
 
 def abstract_interp(equations):
     """
