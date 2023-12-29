@@ -51,7 +51,12 @@ x = add a b
 x = add x z
 ```
 
+A program, of course, can have multiple branches.
 The figure below provides a more complete example of how branches in the text file relate with branches in the target language:
+
+The figure below provides a more complete example of how branches in the text file relate with branches in the target language:
+
+[![Example of program with multiple branches](../assets/images/exParsing.png)
 
 ## Uploading the Assignment
 
