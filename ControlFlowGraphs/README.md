@@ -54,7 +54,7 @@ These functions are listed below:
 * `test_fact(n)`: returns the factorial of n.
 
 
-The lab contains a file, `todo.py`, which you must implement.
+The lab contains a file, [todo.py], which you must implement.
 This file contains an example that you can use: the function `test_min`, which computes the minimum of two numbers.
 
 ## Uploading the Assignment
