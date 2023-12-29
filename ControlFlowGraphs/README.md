@@ -16,7 +16,7 @@ Every instruction has a *next* field, which is the next instruction that should 
 Branches (`Bt`), in turn, have two next fields (the two possible execution paths).
 For instance, below there is an example of a program that computes Fibonacci Numbers:
 
-<img>
+![Example of program with multiple branches](../assets/images/exFibonacci.png)
 
 An interpreter for this programming language is straightforward.
 There is a prototype below:
