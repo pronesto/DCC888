@@ -59,13 +59,13 @@ This file contains an example that you can use: the function `test_min`, which c
 
 ## Uploading the Assignment
 
-Students enrolled in DCC888 has access to UFMG's grading system, via Moodle.
+Students enrolled in DCC888 has access to UFMG's grading system, via [Moodle](https://moodle.org/).
 See below how to upload your assignment.
 The lab consists of three files: [todo.py](todo.py), [lang.py](lang.py) and [driver.py](driver.py).
 You must upload these three files.
 Once you upload these three files, remember to clique on "*Avaliar*" (evaluate), to make sure that you run the tests and get a grade!
 
-## Uploading the Assignment
+## Testing without Moodle
 
 In case you are not enrolled in DCC888, but still wants to try out the assignment, you can run it directly.
 Except for [driver.py](driver.py), the other files use `doctests`, so that you can check that everything is correct doing:
