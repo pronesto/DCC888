@@ -15,6 +15,7 @@ As an example, the program below sums up the numbers a, b and c:
 
 from lang import *
 
+
 def line2env(line):
     """
     Maps a string (the line) to a dictionary in python. This function will be
@@ -27,11 +28,13 @@ def line2env(line):
         1
     """
     import json
+
     env_dict = json.loads(line)
     env_lang = Env()
     for k, v in env_dict.items():
         env_lang.set(k, v)
     return env_lang
+
 
 def file2cfg_and_env(lines):
     """

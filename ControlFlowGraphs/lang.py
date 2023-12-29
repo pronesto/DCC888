@@ -17,6 +17,7 @@ Python 3. It will not work with standard Python 2.
 from collections import deque
 from abc import ABC, abstractclassmethod
 
+
 class Env:
     """
     A table that associates variables with values. The environment is
@@ -35,6 +36,7 @@ class Env:
         >>> e.get("a") + e.get("b")
         7
     """
+
     def __init__(s, initial_args={}):
         s.env = deque()
         for var, value in initial_args.items():
@@ -63,7 +65,7 @@ class Env:
         Prints the contents of the environment. This method is mostly used for
         debugging purposes.
         """
-        for (var, value) in s.env:
+        for var, value in s.env:
             print(f"{var}: {value}")
 
 
@@ -74,6 +76,7 @@ class Inst(ABC):
     attribute determines the next instruction that will be fetched after this
     instruction runs.
     """
+
     def __init__(self):
         self.NEXTS = []
         self.index = 0
@@ -102,6 +105,7 @@ class BinOp(Inst):
     value, and use two values. As such, it contains a routine to extract the
     defined value, and the list of used values.
     """
+
     def __init__(s, dst, src0, src1):
         s.dst = dst
         s.src0 = src0
@@ -128,6 +132,7 @@ class Add(BinOp):
         >>> a.get_next() == None
         True
     """
+
     def eval(s, env):
         env.set(s.dst, env.get(s.src0) + env.get(s.src1))
 
@@ -141,6 +146,7 @@ class Mul(BinOp):
         >>> e.get("a")
         6
     """
+
     def eval(s, env):
         env.set(s.dst, env.get(s.src0) * env.get(s.src1))
 
@@ -154,6 +160,7 @@ class Lth(BinOp):
         >>> e.get("a")
         True
     """
+
     def eval(s, env):
         env.set(s.dst, env.get(s.src0) < env.get(s.src1))
 
@@ -167,6 +174,7 @@ class Geq(BinOp):
         >>> e.get("a")
         False
     """
+
     def eval(s, env):
         env.set(s.dst, env.get(s.src0) >= env.get(s.src1))
 
@@ -186,6 +194,7 @@ class Bt(Inst):
         >>> b.get_next() == a
         True
     """
+
     def __init__(s, cond, true_dst=None, false_dst=None):
         super().__init__()
         s.cond = cond
@@ -214,6 +223,7 @@ class Bt(Inst):
 
     def get_next(s):
         return s.NEXTS[s.next_iter]
+
 
 def interp(instruction, environment):
     """
