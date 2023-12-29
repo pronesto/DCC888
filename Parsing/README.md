@@ -56,7 +56,7 @@ The figure below provides a more complete example of how branches in the text fi
 
 The figure below provides a more complete example of how branches in the text file relate with branches in the target language:
 
-[![Example of program with multiple branches](../assets/images/exParsing.png)
+![Example of program with multiple branches](../assets/images/exParsing.png)
 
 ## Uploading the Assignment
 
