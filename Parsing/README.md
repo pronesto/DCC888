@@ -55,7 +55,7 @@ The figure below provides a more complete example of how branches in the text fi
 
 ## Uploading the Assignment
 
-Students enrolled in DCC888 has access to UFMG's grading system, via [Moodle](https://moodle.org/).
+Students enrolled in DCC888 have access to UFMG's grading system, via [Moodle](https://moodle.org/).
 You must upload three python files to have your assignment graded: [driver.py](driver.py), [lang.py](lang.py) and [todo.py](todo.py).
 Remember to click on "*Avaliar*" to have your assignment graded.
 
