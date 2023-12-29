@@ -32,16 +32,16 @@ def interp(instruction, environment):
 
 The interpreter receives an instruction (which might have a `next` field), plus an environment.
 The environment is a table that maps variable names (strings) to values (integers).
-As an example, the code below should work without raising an error:
+As an example, the code below should work in the Python REPL without raising an error:
 
 ```
->>> env = Env({"m": 3, "n": 2, "zero": 0})
->>> m_min = Add("answer", "m", "zero")
->>> n_min = Add("answer", "n", "zero")
->>> p = Lth("p", "n", "m")
->>> b = Bt("p", n_min, m_min)
->>> p.add_next(b)
->>> assert(interp(p, env).get("answer") == 2)
+env = Env({"m": 3, "n": 2, "zero": 0})
+m_min = Add("answer", "m", "zero")
+n_min = Add("answer", "n", "zero")
+p = Lth("p", "n", "m")
+b = Bt("p", n_min, m_min)
+p.add_next(b)
+assert(interp(p, env).get("answer") == 2)
 ```
 
 ## The Assignment
@@ -61,14 +61,14 @@ This file contains an example that you can use: the function `test_min`, which c
 
 Students enrolled in DCC888 has access to UFMG's grading system, via Moodle.
 See below how to upload your assignment.
-The lab consists of three files: `todo.py`, `lang.py` and `driver.py`.
+The lab consists of three files: [todo.py](todo.py), [lang.py](lang.py) and [driver.py](driver.py).
 You must upload these three files.
-Once you upload these three files, remember to clique on "Avaliar", to make sure that you run the tests and get a grade!
+Once you upload these three files, remember to clique on "*Avaliar*" (evaluate), to make sure that you run the tests and get a grade!
 
 ## Uploading the Assignment
 
 In case you are not enrolled in DCC888, but still wants to try out the assignment, you can run it directly.
-Except for `driver.py`, the other files use `doctests`, so that you can check that everything is correct doing:
+Except for [driver.py](driver.py), the other files use `doctests`, so that you can check that everything is correct doing:
 
 ```
 python3 -m doctest lang.py # or python3 -m doctest todo.py
