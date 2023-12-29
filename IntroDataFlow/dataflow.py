@@ -1,5 +1,6 @@
 from lang import *
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
+
 
 class DataFlowEq(ABC):
     """
@@ -8,16 +9,18 @@ class DataFlowEq(ABC):
     of an equation might change the environment that associates data-flow facts
     with identifiers.
     """
+
     def __init__(self, instruction):
         """
         Every data-flow equation is produced out of a program instruction. The
         initialization of the data-flow equation verifies if, indeed, the input
         object is an instruction.
         """
-        assert(isinstance(instruction, Inst))
+        assert isinstance(instruction, Inst)
         self.inst = instruction
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def name(self) -> str:
         """
         The name of a data-flow equation is used to retrieve the data-flow
@@ -32,7 +35,8 @@ class DataFlowEq(ABC):
         """
         raise NotImplementedError
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def eval_aux(self, data_flow_env) -> set:
         """
         This method determines how each concrete equation evaluates itself.
@@ -54,6 +58,7 @@ class DataFlowEq(ABC):
         data_flow_env[self.name()] = self.eval_aux(data_flow_env)
         return True if data_flow_env[self.name()] != old_env else False
 
+
 def name_in(ID):
     """
     The name of an IN set is always ID + _IN. Eg.:
@@ -64,13 +69,16 @@ def name_in(ID):
     """
     return f"IN_{ID}"
 
+
 class IN_Eq(DataFlowEq):
     """
     This abstract class represents all the equations that affect the IN set
     related to some program point.
     """
+
     def name(self):
         return name_in(self.inst.ID)
+
 
 def name_out(ID):
     """
@@ -82,13 +90,16 @@ def name_out(ID):
     """
     return f"OUT_{ID}"
 
+
 class OUT_Eq(DataFlowEq):
     """
     This abstract class represents all the equations that affect the OUT set
     related to some program point.
     """
+
     def name(self):
         return name_out(self.inst.ID)
+
 
 class ReachingDefs_Bin_OUT_Eq(OUT_Eq):
     """
@@ -97,6 +108,7 @@ class ReachingDefs_Bin_OUT_Eq(OUT_Eq):
     have three fields: dst, src0 and src1; however, only the former is of
     interest for these equations.
     """
+
     def eval_aux(self, data_flow_env):
         """
         Evaluates this equation, where:
@@ -127,6 +139,7 @@ class ReachingDefs_Bin_OUT_Eq(OUT_Eq):
         gen_set = f"({self.inst.dst}, {self.inst.ID})"
         return f"{self.name()}: {gen_set}{kill_set}"
 
+
 class ReachingDefs_Bt_OUT_Eq(OUT_Eq):
     """
     This concrete class implements the equations that affect OUT facts of the
@@ -134,6 +147,7 @@ class ReachingDefs_Bt_OUT_Eq(OUT_Eq):
     do not affect reaching definitions at all. Therefore, their equations are
     mostly treated as identity functions.
     """
+
     def eval_aux(self, data_flow_env):
         """
         Evaluates this equation. Notice that the reaching definition equation
@@ -163,12 +177,14 @@ class ReachingDefs_Bt_OUT_Eq(OUT_Eq):
         gen_set = f""
         return f"{self.name()}: {gen_set}{kill_set}"
 
+
 class ReachingDefs_IN_Eq(IN_Eq):
     """
     This concrete class implements the meet operation for reaching-definition
     analysis. The meet operation produces the IN set of a program point. This
     IN set is the union of the OUT set of the predecessors of this point.
     """
+
     def eval_aux(self, data_flow_env):
         """
         The evaluation of the meet operation over reaching definitions is the
@@ -205,8 +221,9 @@ class ReachingDefs_IN_Eq(IN_Eq):
             >>> str(df)
             'IN_2: Union( OUT_0, OUT_1 )'
         """
-        succs = ', '.join([name_out(pred.ID) for pred in self.inst.preds])
+        succs = ", ".join([name_out(pred.ID) for pred in self.inst.preds])
         return f"{self.name()}: Union( {succs} )"
+
 
 class LivenessAnalysisIN_Eq(IN_Eq):
     def eval_aux(self, data_flow_env):
@@ -239,6 +256,7 @@ class LivenessAnalysisIN_Eq(IN_Eq):
         """
         kill_set = f"({name_out(self.inst.ID)} - {self.inst.definition()})"
         return f"{self.name()}: {kill_set} + {sorted(self.inst.uses())}"
+
 
 class LivenessAnalysisOUT_Eq(OUT_Eq):
     def eval_aux(self, data_flow_env):
@@ -276,6 +294,7 @@ class LivenessAnalysisOUT_Eq(OUT_Eq):
             succs += name_in(inst.ID)
         return f"{self.name()}: Union( {succs} )"
 
+
 def reaching_defs_constraint_gen(insts):
     """
     Builds a list of equations to solve Reaching-Definition Analysis for the
@@ -298,6 +317,7 @@ def reaching_defs_constraint_gen(insts):
     out = [ReachingDefs_IN_Eq(i) for i in insts]
     return in0 + in1 + out
 
+
 def liveness_constraint_gen(insts):
     """
     Builds a list of liness-analysis equations extracted from the instructions
@@ -315,6 +335,7 @@ def liveness_constraint_gen(insts):
     """
     # TODO: implement this method.
     return None
+
 
 def abstract_interp(equations):
     """
@@ -343,6 +364,7 @@ def abstract_interp(equations):
         "IN_0: [], OUT_0: [('c', 0)]"
     """
     from functools import reduce
+
     env = {eq.name(): set() for eq in equations}
     changed = True
     while changed:

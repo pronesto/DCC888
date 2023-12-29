@@ -1,5 +1,6 @@
 from lang import *
 
+
 def test_min(m, n):
     """
     Stores in the variable 'answer' the minimum of 'm' and 'n'
@@ -18,6 +19,7 @@ def test_min(m, n):
     p.add_next(b)
     interp(p, env)
     return env.get("answer")
+
 
 def test_fib(n):
     """
@@ -47,6 +49,7 @@ def test_fib(n):
     interp(i0, env)
     return env.get("answer")
 
+
 def test_min3(x, y, z):
     """
     Stores in the variable 'answer' the minimum of 'x', 'y' and 'z'
@@ -59,6 +62,7 @@ def test_min3(x, y, z):
     """
     # TODO: Implement this method
     return env.get("answer")
+
 
 def test_div(m, n):
     """
@@ -74,6 +78,7 @@ def test_div(m, n):
     """
     # TODO: Implement this method
     return env.get("answer")
+
 
 def test_fact(n):
     """

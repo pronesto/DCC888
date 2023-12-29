@@ -15,7 +15,8 @@ Python 3. It will not work with standard Python 2.
 """
 
 from collections import deque
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
+
 
 class Env:
     """
@@ -35,6 +36,7 @@ class Env:
         >>> e.get("a") + e.get("b")
         7
     """
+
     def __init__(s, initial_args={}):
         s.env = deque()
         for var, value in initial_args.items():
@@ -63,7 +65,7 @@ class Env:
         Prints the contents of the environment. This method is mostly used for
         debugging purposes.
         """
-        for (var, value) in s.env:
+        for var, value in s.env:
             print(f"{var}: {value}")
 
 
@@ -75,6 +77,7 @@ class Inst(ABC):
     instruction runs. Also, every instruction has an index, which is always
     different. The index is incremented whenever a new instruction is created.
     """
+
     next_index = 0
 
     def __init__(self):
@@ -87,11 +90,13 @@ class Inst(ABC):
         self.nexts.append(next_inst)
         next_inst.preds.append(self)
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def definition(self):
         raise NotImplementedError
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def uses(self):
         raise NotImplementedError
 
@@ -108,13 +113,15 @@ class BinOp(Inst):
     value, and use two values. As such, it contains a routine to extract the
     defined value, and the list of used values.
     """
+
     def __init__(s, dst, src0, src1):
         s.dst = dst
         s.src0 = src0
         s.src1 = src1
         super().__init__()
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def get_opcode(self):
         raise NotImplementedError
 
@@ -145,11 +152,12 @@ class Add(BinOp):
         >>> a.get_next() == None
         True
     """
+
     def eval(self, env):
         env.set(self.dst, env.get(self.src0) + env.get(self.src1))
 
     def get_opcode(self):
-        return '+'
+        return "+"
 
 
 class Mul(BinOp):
@@ -161,11 +169,12 @@ class Mul(BinOp):
         >>> e.get("a")
         6
     """
+
     def eval(s, env):
         env.set(s.dst, env.get(s.src0) * env.get(s.src1))
 
     def get_opcode(self):
-        return '*'
+        return "*"
 
 
 class Lth(BinOp):
@@ -177,11 +186,12 @@ class Lth(BinOp):
         >>> e.get("a")
         True
     """
+
     def eval(s, env):
         env.set(s.dst, env.get(s.src0) < env.get(s.src1))
 
     def get_opcode(self):
-        return '<'
+        return "<"
 
 
 class Geq(BinOp):
@@ -193,11 +203,12 @@ class Geq(BinOp):
         >>> e.get("a")
         False
     """
+
     def eval(s, env):
         env.set(s.dst, env.get(s.src0) >= env.get(s.src1))
 
     def get_opcode(self):
-        return '>='
+        return ">="
 
 
 class Bt(Inst):
@@ -215,6 +226,7 @@ class Bt(Inst):
         >>> b.get_next() == a
         True
     """
+
     def __init__(s, cond, true_dst=None, false_dst=None):
         super().__init__()
         s.cond = cond

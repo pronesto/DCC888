@@ -5,6 +5,7 @@ import dataflow
 
 from lang import interp
 
+
 def check_environment(env, init_in):
     """
     This function is an example of how liveness analysis can be used.
@@ -27,9 +28,11 @@ def check_environment(env, init_in):
         except LookupError:
             print(f"{var} is used without being defined")
 
+
 def print_instructions(instructions):
     for inst in instructions:
         print(inst)
+
 
 if __name__ == "__main__":
     """
