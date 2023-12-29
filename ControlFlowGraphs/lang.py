@@ -15,7 +15,7 @@ Python 3. It will not work with standard Python 2.
 """
 
 from collections import deque
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 
 
 class Env:
@@ -84,11 +84,13 @@ class Inst(ABC):
     def add_next(self, next_inst):
         self.NEXTS.append(next_inst)
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def definition(self):
         raise NotImplementedError
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def uses(self):
         raise NotImplementedError
 

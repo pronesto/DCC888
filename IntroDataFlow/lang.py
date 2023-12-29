@@ -15,7 +15,7 @@ Python 3. It will not work with standard Python 2.
 """
 
 from collections import deque
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 
 
 class Env:
@@ -90,11 +90,13 @@ class Inst(ABC):
         self.nexts.append(next_inst)
         next_inst.preds.append(self)
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def definition(self):
         raise NotImplementedError
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def uses(self):
         raise NotImplementedError
 
@@ -118,7 +120,8 @@ class BinOp(Inst):
         s.src1 = src1
         super().__init__()
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def get_opcode(self):
         raise NotImplementedError
 

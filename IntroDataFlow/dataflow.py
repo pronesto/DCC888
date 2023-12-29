@@ -1,5 +1,5 @@
 from lang import *
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 
 
 class DataFlowEq(ABC):
@@ -19,7 +19,8 @@ class DataFlowEq(ABC):
         assert isinstance(instruction, Inst)
         self.inst = instruction
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def name(self) -> str:
         """
         The name of a data-flow equation is used to retrieve the data-flow
@@ -34,7 +35,8 @@ class DataFlowEq(ABC):
         """
         raise NotImplementedError
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def eval_aux(self, data_flow_env) -> set:
         """
         This method determines how each concrete equation evaluates itself.
