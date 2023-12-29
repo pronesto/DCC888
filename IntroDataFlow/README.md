@@ -12,7 +12,7 @@ Thus, as a preliminary step, rename your parser, from the previous lab, from `to
 Notice that this lab contains a file [parser.py](parser.py), which you can replace with the `todo.py` from the previous lab (well, assuming that you have implemented it, of course).
 The parser is the only file from the previous lab that you should reuse.
 
-To solve the lab, you will have to implement liveness analysis.
+The goal of this lab is to implement liveness analysis.
 Liveness analysis is a "*backward*" data-flow analysis, meaning that information propagates along the opposite direction through which the program flows.
 It is also a "*may*" analysis, meaning that information is an over-approximation of facts that might happen in the program (to make things simpler, the join/meet operation is set-union).
 If you want to recap how the analysis works, check out the [course material](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/IntroDataFlow.pdf).
