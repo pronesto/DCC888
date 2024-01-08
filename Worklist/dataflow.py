@@ -284,103 +284,6 @@ class ReachingDefs_IN_Eq(IN_Eq):
         return f"{self.name()}: Union( {succs} )"
 
 
-class LivenessAnalysisIN_Eq(IN_Eq):
-    def eval_aux(self, data_flow_env):
-        """
-        Produces the IN set of liveness analysis. The IN set is given by the
-        equation below, considering the instruction `p) v = E`:
-
-        IN[p] = uses(E) + (OUT[p] - {v})
-
-        Example:
-            >>> Inst.next_index = 0
-            >>> i0 = Add('x', 'a', 'b')
-            >>> df = LivenessAnalysisIN_Eq(i0)
-            >>> sorted(df.eval_aux({'OUT_0': {'x'}}))
-            ['a', 'b']
-        """
-        out_name = name_out(self.inst.ID)
-        solution = data_flow_env[out_name] - self.inst.definition()
-        return solution.union(self.inst.uses())
-
-    def deps(self):
-        """
-        The list of dependencies of this equation. Ex.:
-            >>> Inst.next_index = 0
-            >>> add = Add('x', 'a', 'b')
-            >>> df = LivenessAnalysisIN_Eq(add)
-            >>> df.deps()
-            ['OUT_0']
-        """
-        return [name_out(self.inst.ID)]
-
-    def __str__(self):
-        """
-        A string representation of an equation.
-
-        Example:
-            >>> Inst.next_index = 0
-            >>> add = Add('x', 'a', 'b')
-            >>> df = LivenessAnalysisIN_Eq(add)
-            >>> df.__str__()
-            "IN_0: (OUT_0 - {'x'}) + ['a', 'b']"
-        """
-        kill_set = f"({name_out(self.inst.ID)} - {self.inst.definition()})"
-        return f"{self.name()}: {kill_set} + {sorted(self.inst.uses())}"
-
-
-class LivenessAnalysisOUT_Eq(OUT_Eq):
-    def eval_aux(self, data_flow_env):
-        """
-        Computes the join (or meet) operation of the liveness analysis. The
-        join of a point `p` is computed in the following way:
-
-        OUT[p] = union(IN[s]), for s in succ(p)
-
-        Example:
-            >>> Inst.next_index = 0
-            >>> i0 = Add('x', 'c', 'd')
-            >>> i1 = Add('y', 'a', 'a')
-            >>> i2 = Bt('c', i0, i1)
-            >>> df = LivenessAnalysisOUT_Eq(i2)
-            >>> sorted(df.eval_aux({'IN_0': {('c'), ('d')}, 'IN_1': {('a')}}))
-            ['a', 'c', 'd']
-        """
-        solution = set()
-        for inst in self.inst.nexts:
-            solution = solution.union(data_flow_env[name_in(inst.ID)])
-        return solution
-
-    def deps(self):
-        """
-        The list of dependencies of this equation. Ex.:
-            >>> Inst.next_index = 0
-            >>> i0 = Add('x', 'a', 'b')
-            >>> i1 = Add('y', 'x', 'a')
-            >>> i0.add_next(i1)
-            >>> df = LivenessAnalysisOUT_Eq(i0)
-            >>> df.deps()
-            ['IN_1']
-        """
-        return [name_in(inst.ID) for inst in self.inst.nexts]
-
-    def __str__(self):
-        """
-        The name of an IN set is always ID + _IN. Eg.:
-            >>> Inst.next_index = 0
-            >>> i0 = Add('x', 'a', 'b')
-            >>> i1 = Add('y', 'x', 'a')
-            >>> i0.add_next(i1)
-            >>> df = LivenessAnalysisOUT_Eq(i0)
-            >>> df.__str__()
-            'OUT_0: Union( IN_1 )'
-        """
-        succs = ""
-        for inst in self.inst.nexts:
-            succs += name_in(inst.ID)
-        return f"{self.name()}: Union( {succs} )"
-
-
 def reaching_defs_constraint_gen(insts):
     """
     Builds a list of equations to solve Reaching-Definition Analysis for the
@@ -404,41 +307,11 @@ def reaching_defs_constraint_gen(insts):
     return in0 + in1 + out
 
 
-def liveness_constraint_gen(insts):
-    """
-    Builds a list of liness-analysis equations extracted from the instructions
-    in the list `insts`
-
-    Example:
-        >>> Inst.next_index = 0
-        >>> i0 = Add('c', 'a', 'b')
-        >>> i1 = Mul('d', 'c', 'a')
-        >>> i0.add_next(i1)
-        >>> insts = [i0, i1]
-        >>> sol = [str(eq) for eq in liveness_constraint_gen(insts)]
-        >>> sol[0] + " " + sol[1]
-        "IN_0: (OUT_0 - {'c'}) + ['a', 'b'] IN_1: (OUT_1 - {'d'}) + ['a', 'c']"
-    """
-    in_eqs = [LivenessAnalysisIN_Eq(inst) for inst in insts]
-    out_eqs = [LivenessAnalysisOUT_Eq(inst) for inst in insts]
-    return in_eqs + out_eqs
-
-
 def abstract_interp(equations):
     """
     This function iterates on the equations, solving them in the order in which
     they appear. It returns an environment with the solution to the data-flow
     analysis.
-
-    Example for liveness analysis:
-        >>> Inst.next_index = 0
-        >>> i0 = Add('c', 'a', 'b')
-        >>> i1 = Mul('d', 'c', 'a')
-        >>> i0.add_next(i1)
-        >>> eqs = liveness_constraint_gen([i0, i1])
-        >>> (sol, num_evals) = abstract_interp(eqs)
-        >>> f"IN_0: {sorted(sol['IN_0'])}, Num Evals: {num_evals}"
-        "IN_0: ['a', 'b'], Num Evals: 8"
 
     Example for reaching-definition analysis:
         >>> Inst.next_index = 0
@@ -485,16 +358,6 @@ def abstract_interp_worklist(equations):
     This function solves the system of equations using a worklist. Once an
     equation E is evaluated, and the evaluation changes the environment, only
     the dependencies of E are pushed onto the worklist.
-
-    Example for liveness analysis:
-        >>> Inst.next_index = 0
-        >>> i0 = Add('c', 'a', 'b')
-        >>> i1 = Mul('d', 'c', 'a')
-        >>> i0.add_next(i1)
-        >>> eqs = liveness_constraint_gen([i0, i1])
-        >>> (sol, num_evals) = abstract_interp_worklist(eqs)
-        >>> f"IN_0: {sorted(sol['IN_0'])}, Num Evals: {num_evals}"
-        "IN_0: ['a', 'b'], Num Evals: 6"
 
     Example for reaching-definition analysis:
         >>> Inst.next_index = 0
