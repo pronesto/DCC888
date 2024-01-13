@@ -41,6 +41,7 @@ The function that builds the dependence graph is `build_dependence_graph`.
 This function receives a list of equations, and returns the dependence graph
 formed by these equations.
 You must implement this function.
+An example of a system of data-flow equations, and the corresponding dependence graph can be seen in the figure below.
 
 ![Example of Dependence Graph](../assets/images/exDependenceGraph.png)
 
