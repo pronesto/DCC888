@@ -263,7 +263,8 @@ class ReachingDefs_IN_Eq(IN_Eq):
             >>> sorted(df.deps())
             ['OUT_0', 'OUT_1']
         """
-        return [name_out(pred.ID) for pred in self.inst.preds]
+        # TODO: Implement this method
+        return []
 
     def __str__(self):
         """
@@ -346,12 +347,9 @@ def build_dependence_graph(equations):
         >>> [eq.name() for eq in deps['IN_0']]
         ['OUT_0']
     """
-    deps = {eq: eq.deps() for eq in equations}
-    inverted_deps = {eq.name(): [] for eq in equations}
-    for eq, dep_names in deps.items():
-        for eq_name in dep_names:
-            inverted_deps[eq_name].append(eq)
-    return inverted_deps
+    # TODO: implement this method
+    dep_graph = {eq.name(): [] for eq in equations}
+    return dep_graph
 
 def abstract_interp_worklist(equations):
     """
@@ -370,13 +368,7 @@ def abstract_interp_worklist(equations):
         "OUT_0: [('c', 0)], Num Evals: 6"
     """
     # TODO: implement this method
-    dep_graph = build_dependence_graph(equations)
+    from collections import defaultdict
     DataFlowEq.num_evals = 0
-    env = {eq.name(): set() for eq in equations}
-    # worklist = [eq for eq in equations if len(eq.deps()) == 0]
-    worklist = equations
-    while worklist:
-        eq = worklist.pop(0)
-        if eq.eval(env):
-            worklist.extend(dep_graph[eq.name()])
+    env = defaultdict(list)
     return (env, DataFlowEq.num_evals)
