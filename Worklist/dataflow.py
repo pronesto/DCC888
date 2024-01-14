@@ -333,6 +333,7 @@ def abstract_interp(equations):
         changed = reduce(lambda acc, eq: eq.eval(env) or acc, equations, False)
     return (env, DataFlowEq.num_evals)
 
+
 def build_dependence_graph(equations):
     """
     This function builds the dependence graph of equations.
@@ -350,6 +351,7 @@ def build_dependence_graph(equations):
     # TODO: implement this method
     dep_graph = {eq.name(): [] for eq in equations}
     return dep_graph
+
 
 def abstract_interp_worklist(equations):
     """
@@ -369,6 +371,7 @@ def abstract_interp_worklist(equations):
     """
     # TODO: implement this method
     from collections import defaultdict
+
     DataFlowEq.num_evals = 0
     env = defaultdict(list)
     return (env, DataFlowEq.num_evals)
