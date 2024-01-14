@@ -17,8 +17,10 @@ from our original implementation of the data-flow solver:
 
 ## The Assignment
 
-To solve this lab, you will have to have solved the [parsing exercise](../Parsing) (the lab about the implementation of the parser).
-Thus, as a preliminary step, rename your parser, from the previous lab, from `todo.py` to `parser.py`.
+In this lab we shall implement a worklist-based solver, and shall use it to solve the reaching-definitions analysis.
+Do not worry about implementing the evaluation of the reaching-definitions equations: that has already been done for you.
+However, to finish this lab, you will have to have solved the [parsing exercise](../Parsing) (the lab about the implementation of the parser).
+Thus, as a preliminary step, rename your parser, from that lab, from `todo.py` to `parser.py`.
 Notice that this lab contains a file [parser.py](parser.py), which you can replace with the `todo.py` from that previous lab (well, assuming that you have implemented it, of course).
 The parser is the only file from the previous lab that you should reuse.
 
@@ -31,8 +33,8 @@ This special property is implement for all the equations, except for
 `ReachingDefs_IN_Eq`.
 Your first task is to implement this property.
 
-**Building the dependence graph**:
-once you have implemented all the pending `deps` properties (well, there is only one to be implemented, really), you must use them to build a *dependence graph*.
+**The dependence graph**:
+Once you have implemented all the pending `deps` properties (well, there is only one to be implemented, really), you must use them to build a *dependence graph*.
 A dependence graph is a data structure that maps equations equations to lists of equations.
 If *G* is a dependence graph, and *e* is an equation, then *G[e]* is the list of all the equations that use *e*.
 In this exercise, we are mapping equations by name, e.g., we write
@@ -45,6 +47,12 @@ An example of a system of data-flow equations, and the corresponding dependence 
 
 ![Example of Dependence Graph](../assets/images/exDependenceGraph.png)
 
+**The solver**:
+To finish this lab, you must use your dependence graph to implement a worklist-
+based solver (function `worklist_solver` in [dataflow.py](dataflow.py)), following the design in Figure 1-b.
+Basically, if the evaluation of an equation *e* changes the environment, you must push back onto the worklist only the other equations that depend on *e*.
+Iterations happen by popping the first equation in the worklist, and evaluating it, until eventually the worklist becomes empty.
+Notice that the worklist will become necessarily empty, as our system of equations that solve reaching definitions is guaranteed to reach a [fixed point](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/Lattices.pdf).
 
 ## Uploading the Assignment
 
@@ -68,3 +76,13 @@ To simulate automatic grading, you can run [drive.py](driver.py) directly, e.g.:
 ```
 python3 driver.py < tests/fib.txt
 ```
+
+In this lab, the driver invokes two solvers onto the same system of equations.
+The first solver, our baseline, is the `chaotic_solver` that we have seen in the [previous lab](../IntroDataFlow/).
+The second solver, `worklist_solver`, is the worklist-based algorithm that you must implement in this exercise.
+The driver then does two things:
+
+1. It checks for correctness, verifying if both solvers produce the same final environment.
+2. It checks for efficiency, verifying if the `worklist_solver` evaluates less equations than `chaotic_solver`.
+
+Notice that to implement step (2) above, our current implementation tracks the number of times that each method `eval` was invoked upon an equation, via a class attribute `DataFlowEq.num_evals`.
