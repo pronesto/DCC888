@@ -43,3 +43,7 @@ convert text files into control-flow graphs.
 
 In this [lab](/IntroDataFlow), the student will implement liveness analysis and
 run this implementation onto our toy language.
+
+### Worklist Algorithms
+
+In this [lab](/Worklist), the student will implement a worklist-based solver for dataflow analyses.
