@@ -74,15 +74,21 @@ class Inst(ABC):
     The representation of instructions. All that an instruction has, that is
     common among all the instructions, is the next_inst attribute. This
     attribute determines the next instruction that will be fetched after this
-    instruction runs.
+    instruction runs. Also, every instruction has an index, which is always
+    different. The index is incremented whenever a new instruction is created.
     """
 
+    next_index = 0
+
     def __init__(self):
-        self.NEXTS = []
-        self.index = 0
+        self.nexts = []
+        self.preds = []
+        self.ID = Inst.next_index
+        Inst.next_index += 1
 
     def add_next(self, next_inst):
-        self.NEXTS.append(next_inst)
+        self.nexts.append(next_inst)
+        next_inst.preds.append(self)
 
     @classmethod
     @abstractmethod
@@ -95,8 +101,8 @@ class Inst(ABC):
         raise NotImplementedError
 
     def get_next(self):
-        if len(self.NEXTS) > 0:
-            return self.NEXTS[0]
+        if len(self.nexts) > 0:
+            return self.nexts[0]
         else:
             return None
 
@@ -114,11 +120,23 @@ class BinOp(Inst):
         s.src1 = src1
         super().__init__()
 
+    @classmethod
+    @abstractmethod
+    def get_opcode(self):
+        raise NotImplementedError
+
     def definition(s):
         return set([s.dst])
 
     def uses(s):
         return set([s.src0, s.src1])
+
+    def __str__(self):
+        op = self.get_opcode()
+        inst_s = f"{self.ID}: {self.dst} = {self.src0}{op}{self.src1}"
+        pred_s = f"\n  P: {', '.join([str(inst.ID) for inst in self.preds])}"
+        next_s = f"\n  N: {self.nexts[0].ID if len(self.nexts) > 0 else ''}"
+        return inst_s + pred_s + next_s
 
 
 class Add(BinOp):
@@ -135,8 +153,11 @@ class Add(BinOp):
         True
     """
 
-    def eval(s, env):
-        env.set(s.dst, env.get(s.src0) + env.get(s.src1))
+    def eval(self, env):
+        env.set(self.dst, env.get(self.src0) + env.get(self.src1))
+
+    def get_opcode(self):
+        return "+"
 
 
 class Mul(BinOp):
@@ -152,6 +173,9 @@ class Mul(BinOp):
     def eval(s, env):
         env.set(s.dst, env.get(s.src0) * env.get(s.src1))
 
+    def get_opcode(self):
+        return "*"
+
 
 class Lth(BinOp):
     """
@@ -166,6 +190,9 @@ class Lth(BinOp):
     def eval(s, env):
         env.set(s.dst, env.get(s.src0) < env.get(s.src1))
 
+    def get_opcode(self):
+        return "<"
+
 
 class Geq(BinOp):
     """
@@ -179,6 +206,9 @@ class Geq(BinOp):
 
     def eval(s, env):
         env.set(s.dst, env.get(s.src0) >= env.get(s.src1))
+
+    def get_opcode(self):
+        return ">="
 
 
 class Bt(Inst):
@@ -200,7 +230,11 @@ class Bt(Inst):
     def __init__(s, cond, true_dst=None, false_dst=None):
         super().__init__()
         s.cond = cond
-        s.NEXTS = [true_dst, false_dst]
+        s.nexts = [true_dst, false_dst]
+        if true_dst != None:
+            true_dst.preds.append(s)
+        if false_dst != None:
+            false_dst.preds.append(s)
 
     def definition(s):
         return set()
@@ -208,8 +242,13 @@ class Bt(Inst):
     def uses(s):
         return set([s.cond])
 
+    def add_true_next(s, true_dst):
+        s.nexts[0] = true_dst
+        true_dst.preds.append(s)
+
     def add_next(s, false_dst):
-        s.NEXTS[1] = false_dst
+        s.nexts[1] = false_dst
+        false_dst.preds.append(s)
 
     def eval(s, env):
         """
@@ -224,7 +263,13 @@ class Bt(Inst):
             s.next_iter = 1
 
     def get_next(s):
-        return s.NEXTS[s.next_iter]
+        return s.nexts[s.next_iter]
+
+    def __str__(self):
+        inst_s = f"{self.ID}: bt {self.cond}"
+        pred_s = f"\n  P: {', '.join([str(inst.ID) for inst in self.preds])}"
+        next_s = f"\n  NT:{self.nexts[0].ID} NF:{self.nexts[1].ID}"
+        return inst_s + pred_s + next_s
 
 
 def interp(instruction, environment):

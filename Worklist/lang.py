@@ -242,6 +242,10 @@ class Bt(Inst):
     def uses(s):
         return set([s.cond])
 
+    def add_true_next(s, true_dst):
+        s.nexts[0] = true_dst
+        true_dst.preds.append(s)
+
     def add_next(s, false_dst):
         s.nexts[1] = false_dst
         false_dst.preds.append(s)
