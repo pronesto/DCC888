@@ -157,10 +157,33 @@ def dominance_constraint_gen(insts):
 
 
 class UniversalSet(set):
+    """
+    This class implements a 'set of everything'. Basically, the intersection of
+    a universal set with any other set is always the other set. We use this
+    set of everything to simulate the TOP of a JOIN semi-lattice. The TOP is
+    the element that, once joined with any other element, will be the other
+    element. We initialize the set of dominators with the TOP, for instance.
+    """
     def __and__(self, other):
+        """
+        The AND operation of a universal set and any set is always the other
+        set. Ex.:
+            >>> set([1, 2, 3]) & UniversalSet()
+            {1, 2, 3}
+            >>> set() & UniversalSet()
+            set()
+        """
         return other
 
     def __rand__(self, other):
+        """
+        The AND operation of any set and a universal set is always the other
+        set. Ex.:
+            >>> UniversalSet() & set()
+            set()
+            >>> UniversalSet() & set(['a', 'b'])
+            {'b', 'a'}
+        """
         return other
 
 
