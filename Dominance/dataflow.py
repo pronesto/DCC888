@@ -91,14 +91,8 @@ class Dominance_Eq(DataFlowEq):
             >>> sorted(df.eval_aux({'1': {0, 1}, '2': {0, 2}}))
             [0, 3]
         """
-        from functools import reduce
-
-        inter_dom = set()
-        if self.inst.preds:
-            pdoms = [env.get(str(pred.ID)) for pred in self.inst.preds]
-            inter_dom = reduce(lambda acc, s: acc & s, pdoms)
-            #print(f"Predecessors = {pdoms}, current = {inter_dom}")
-        return inter_dom.union(set([self.inst.ID]))
+        # TODO: Implement this method.
+        return set()
 
 
     def name(self):
@@ -115,7 +109,9 @@ class Dominance_Eq(DataFlowEq):
 
     def __str__(self):
         """
-        The name of an IN set is always ID + _IN.
+        The name of a dominance equation is always in the format:
+        D(n) = set(n) U Intersection( D(p1), D(p2), ... D(pn) )
+        where each pi is a predecessor of n.
 
         Example:
             >>> Inst.next_index = 0
@@ -153,7 +149,8 @@ def dominance_constraint_gen(insts):
         >>> sol[3]
         'D(3) = set(3) U Intersection( D(0), D(1), D(2) )'
     """
-    return [Dominance_Eq(i) for i in insts]
+    # TODO: Implement this function.
+    return []
 
 
 class UniversalSet(set):
@@ -224,10 +221,6 @@ def abstract_interp(equations):
         >>> f"D(0): {sorted(sol['0'])}, D(1): {sorted(sol['3'])}"
         'D(0): [0], D(1): [0, 3]'
     """
-    from functools import reduce
-
+    # TODO: Implement this function.
     env = {eq.name(): UniversalSet() for eq in equations}
-    changed = True
-    while changed:
-        changed = reduce(lambda acc, eq: eq.eval(env) or acc, equations, False)
     return env
