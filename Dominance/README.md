@@ -57,6 +57,10 @@ You can easily test your implementation by doing, for instance:
 python3 -m doctest dataflow.py
 ```
 
+As an example, the program in Figure 2 can be tested using the series of Python statements seen in Figure 3.
+
+![Example of doctest for dominance relation](../assets/images/testDominance.png)
+
 This lab also provides a [folder](tests) with some test cases.
 To simulate automatic grading, you can run [drive.py](driver.py) directly, e.g.:
 
