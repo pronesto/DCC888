@@ -31,8 +31,8 @@ The following labs are available:
 
 ### Control-Flow Graphs
 
-In this [lab](/ControlFlowGraphs), the student will create simple control-flow
-graphs uses a toy, assembly-like, programming language.
+In this [lab](/ControlFlowGraphs), the student will create simple [control-flow
+graphs](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/ControlFlowGraphs.pdf) using a toy, assembly-like, programming language.
 
 ### Parsing
 
@@ -41,9 +41,13 @@ convert text files into control-flow graphs.
 
 ### Data-Flow Analysis
 
-In this [lab](/IntroDataFlow), the student will implement liveness analysis and
-run this implementation onto our toy language.
+In this [lab](/IntroDataFlow), the student will implement [liveness analysis](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/IntroDataFlow.pdf) and run this implementation onto our toy language.
 
 ### Worklist Algorithms
 
-In this [lab](/Worklist), the student will implement a worklist-based solver for dataflow analyses.
+In this [lab](/Worklist), the student will implement a [worklist-based](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/WorkList.pdf) solver for dataflow analyses.
+
+
+### Dominators
+
+In this [lab](/Dominance), the student will implement a data-flow analysis to compute the [dominance tree](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/LoopOptimizations.pdf) of a program.
