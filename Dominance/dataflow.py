@@ -165,8 +165,8 @@ class UniversalSet(set):
         """
         The AND operation of a universal set and any set is always the other
         set. Ex.:
-            >>> set([1, 2, 3]) & UniversalSet()
-            {1, 2, 3}
+            >>> sorted(set([1, 2, 3]) & UniversalSet())
+            [1, 2, 3]
             >>> set() & UniversalSet()
             set()
         """
@@ -178,8 +178,8 @@ class UniversalSet(set):
         set. Ex.:
             >>> UniversalSet() & set()
             set()
-            >>> UniversalSet() & set(['a', 'b'])
-            {'b', 'a'}
+            >>> sorted(UniversalSet() & set(['a', 'b']))
+            ['a', 'b']
         """
         return other
 
@@ -220,6 +220,23 @@ def abstract_interp(equations):
         >>> sol = abstract_interp(eqs)
         >>> f"D(0): {sorted(sol['0'])}, D(1): {sorted(sol['3'])}"
         'D(0): [0], D(1): [0, 3]'
+
+        >>> Inst.next_index = 0
+        >>> c0 = Add('c', 'zero', 'zero')
+        >>> repeat = Lth('repeat', 'c', 'N')
+        >>> bt = Bt('repeat')
+        >>> c1 = Add('c', 'c', 'one')
+        >>> answer = Add('answer', 'c', 'zero')
+        >>> c0.add_next(repeat)
+        >>> repeat.add_next(bt)
+        >>> bt.add_next(answer)
+        >>> bt.add_true_next(c1)
+        >>> c1.add_next(repeat)
+        >>> insts = [c0, repeat, bt, c1, answer]
+        >>> eqs = dominance_constraint_gen(insts)
+        >>> s = abstract_interp(eqs)
+        >>> f"D(0): {sorted(s['0'])}, D(1): {sorted(s['1'])}"
+        'D(0): [0], D(1): [0, 1]'
     """
     # TODO: Implement this function.
     env = {eq.name(): UniversalSet() for eq in equations}
