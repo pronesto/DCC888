@@ -51,7 +51,7 @@ class Env:
         if val is not None:
             return val
         else:
-            raise LookupError(f"Absent key {val}")
+            raise LookupError(f"Absent key {var}")
 
     def set(s, var, value):
         """
