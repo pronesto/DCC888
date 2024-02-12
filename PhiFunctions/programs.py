@@ -27,6 +27,7 @@ def test_min(m, n):
     interp(p, env)
     return env.get("answer")
 
+
 def test_min3(x, y, z):
     """
     Stores in the variable 'answer' the minimum of 'x', 'y' and 'z'
@@ -54,6 +55,7 @@ def test_min3(x, y, z):
     min3.add_next(answer)
     interp(p0, env)
     return env.get("answer")
+
 
 def test_div(m, n):
     """
@@ -85,6 +87,7 @@ def test_div(m, n):
     interp(d1, env)
     return env.get("answer")
 
+
 def test_fact(n):
     """
     Stores in the variable 'answer' the factorial of 'n'.
@@ -108,6 +111,7 @@ def test_fact(n):
     n2.add_next(n1)
     interp(n1, env)
     return env.get("answer")
+
 
 def test_fib(n):
     """
@@ -142,6 +146,7 @@ def test_fib(n):
     interp(a, env)
     return env.get("answer")
 
+
 def test_fib_swap_problem(n):
     """
     This implementation of the Fibonacci Sequence illustrates the so-called
@@ -173,6 +178,7 @@ def test_fib_swap_problem(n):
     c2.add_next(b)
     interp(b, env)
     return env.get("answer")
+
 
 def test_fib_swap_problem_fixed_with_phi_blocks(n):
     """

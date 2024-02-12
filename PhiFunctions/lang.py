@@ -5,7 +5,11 @@ instruction, plus an environment, which is a stack of bindings. Bindings are
 pairs of variable names and values. New bindings are added to the stack
 whenever new variables are defined. Bindings are never removed from the stack.
 In this way, we can inspect the history of state transformations caused by the
-interpretation of a program.
+interpretation of a program. The difference between this file and the files of
+same name in the previous lab is the presence of phi-functions. In other words,
+this new language contains two extra instructions: phi-functions and phi-blocks.
+The latter represents the set of phi-functions that exist at the beginning of
+a basic block.
 
 This file uses doctests all over. To test it, just run python 3 as follows:
 "python3 -m doctest main.py". The program uses syntax that is excluive of
@@ -54,7 +58,23 @@ class Env:
     def get_from_list(self, vars):
         """
         Finds the first occurrence of any variable 'vr' in the list 'vars' that
-        has a binding in the environment, and returns associated value.
+        has a binding in the environment, and returns the associated value.
+
+        Example:
+            >>> e = Env()
+            >>> e.set("b", 1)
+            >>> e.set("a", 2)
+            >>> e.set("b", 3)
+            >>> e.get_from_list(["b", "a"])
+            3
+
+            >>> e = Env()
+            >>> e.set("b", 1)
+            >>> e.set("a", 2)
+            >>> e.set("b", 3)
+            >>> e.set("a", 4)
+            >>> e.get_from_list(["b", "a"])
+            4
         """
         # TODO: Implement this method
         val = next((v for (var, v) in self.env if var in vars), None)
@@ -116,8 +136,21 @@ class Inst(ABC):
         else:
             return None
 
+
 class Phi(Inst):
     """
+    A Phi-Function is an abstract notation used to facilitate the implementation
+    of static analyses. They were not really conceived to have a dynamic
+    semantics. Nevertheless, we can still interpret programs containing
+    phi-functions. A possible semantics of 'a = phi(a0, a1, a2)' is to
+    recover, from the environment, the first binding of either a0, a1 or a2.
+    If our program were in the so-called "Conventional-SSA Form", this
+    semantics would be perfect. But our program is not in such a format, and
+    we might have issues with swaps, for instance. That's why we shall use
+    phi-blocks to implement phi-functions. All the same, you can still write
+    programs using phi-functions without using phi-blocks, as long as variables
+    that are related by phi-functions do not have overlapping live ranges.
+
     Example:
         >>> a = Phi("a", ["b0", "b1", "b2"])
         >>> e = Env()
@@ -126,6 +159,7 @@ class Phi(Inst):
         >>> a.eval(e)
         >>> e.get("a")
         3
+
         >>> a = Phi("a", ["b0", "b1"])
         >>> e = Env()
         >>> e.set("b1", 3)
@@ -134,6 +168,7 @@ class Phi(Inst):
         >>> e.get("a")
         1
     """
+
     def __init__(s, dst, args):
         s.dst = dst
         s.args = args
@@ -149,7 +184,27 @@ class Phi(Inst):
         """
         If the program were in Conventional-SSA form, then we could correctly
         implement the semantics of phi-functions simply retrieving the first
-        occurrence of each variable in the list of uses.
+        occurrence of each variable in the list of uses. However, notice what
+        would happen with swaps:
+
+        >>> a0 = Phi("a0", ["a1", "a0"])
+        >>> a1 = Phi("a1", ["a0", "a1"])
+        >>> e = Env()
+        >>> e.set("a0", 1)
+        >>> e.set("a1", 3)
+        >>> a0.eval(e)
+        >>> a1.eval(e)
+        >>> e.get("a0") - e.get("a1")
+        0
+
+        In the example above, we would like to evaluate the two phi-functions in
+        parallel, e.g.: (a0, a1) = (a0:1, a1:3). In this way, after the
+        evaluation, we would like to have a0 == 3 and a1 == 1. However, there is
+        no way we can do it: our phi-functions are evaluated once at a time! The
+        problem is that variables a0 and a1 are defined by different
+        phi-functions, but they have overlapping live ranges. So, this
+        program is not in conventional SSA-form (as per Definition 1 in the
+        paper 'SSA Elimination after Register Allocation' - 2009).
         """
         env.set(s.dst, env.get_from_list(s.uses()))
 
@@ -163,6 +218,14 @@ class Phi(Inst):
 
 class PhiBlock(Inst):
     """
+    PhiBlocks implement a correct semantics for groups of phi-functions. A
+    phi-block groups a number of phi-functions as a matrix. Once a phi-block
+    is evaluated, all the values in a given column of this matrix are read and
+    saved, and then the definitions are updated --- all in parallel. To see a
+    more detailed explanation of this semantics, please, refer to Section 3 of
+    the paper 'SSA Elimination after Register Allocation'. In particular, take
+    a look into Figure 1 of that paper.
+
     Example:
         >>> a0 = Phi("a0", ["a0", "a1"])
         >>> a1 = Phi("a1", ["a1", "a0"])
@@ -184,22 +247,67 @@ class PhiBlock(Inst):
         >>> e.get("a0") - e.get("a1")
         2
     """
+
     def __init__(self, phis, selector_IDs):
+        """
+        A phi-block represents an M*N matrix, where each one of the M lines is
+        a phi-function, and each phi-function reads from N different parameters.
+        Each one of these N columns is associated with a 'selector', which is
+        the ID of the instruction that leads to that parallel assignment.
+
+        Examples:
+            >>> a0 = Phi("a0", ["a0", "a1"])
+            >>> a1 = Phi("a1", ["a1", "a0"])
+            >>> aa = PhiBlock([a0, a1], [10, 31])
+            >>> sorted(aa.selectors.items())
+            [(10, 0), (31, 1)]
+
+            >>> a0 = Phi("a0", ["a0", "a1"])
+            >>> a1 = Phi("a1", ["a1", "a0"])
+            >>> aa = PhiBlock([a0, a1], [10, 31])
+            >>> sorted([phi.definition() for phi in aa.phis])
+            ['a0', 'a1']
+        """
         self.phis = phis
         # TODO: implement the rest of this method
         self.selectors = {ID: index for index, ID in enumerate(selector_IDs)}
         super().__init__()
 
     def definition(self):
+        """
+        We consider that a phi-block defines multiple variables. These are the
+        variables assignment by the phi-functions that the phi-block contains.
+
+        Example:
+            >>> a0 = Phi("a0", ["a0", "a1"])
+            >>> a1 = Phi("a1", ["a1", "a0"])
+            >>> aa = PhiBlock([a0, a1], [10, 31])
+            >>> sorted(aa.definition())
+            ['a0', 'a1']
+        """
         return [phi.definition() for phi in self.phis]
 
     def uses(self):
+        """
+        The uses of a phi-block are all the variables used by the phi-functions
+        that it contains. Notice that we don't need this method for anything; it
+        is here rather to help understand the structure of phi-blocks.
+
+        Example:
+            >>> a0 = Phi("a0", ["a0", "x"])
+            >>> a1 = Phi("a1", ["y", "a0"])
+            >>> aa = PhiBlock([a0, a1], [10, 31])
+            >>> sorted(aa.uses())
+            ['a0', 'a0', 'x', 'y']
+        """
         return sum([phi.uses() for phi in self.phis], [])
 
     def eval(self, env, PC):
         # TODO: Read all the definitions
-        phi_env = {phi.definition(): env.get(phi.uses()[self.selectors[PC]]) \
-                for phi in self.phis}
+        phi_env = {
+            phi.definition(): env.get(phi.uses()[self.selectors[PC]])
+            for phi in self.phis
+        }
         # TODO: Assign all the uses:
         for phi_def, phi_val in phi_env.items():
             env.set(phi_def, phi_val)
@@ -400,8 +508,10 @@ def interp(instruction, environment, PC=0):
     """
     if instruction:
         if isinstance(instruction, PhiBlock):
+            # TODO: implement this part:
             instruction.eval(environment, PC)
         else:
+            # TODO: implement this part:
             instruction.eval(environment)
         return interp(instruction.get_next(), environment, instruction.ID)
     else:
