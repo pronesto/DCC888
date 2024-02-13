@@ -13,6 +13,9 @@ This assignment has two parts.
 In the first part, we shall implement a "tentative" semantics for phi-functions.
 I say tentative because it will only work for a very special flavor of SSA-form programs: the so-called programs in *Conventional Static Single-Assignment (CSSA)
 Form*.
+
+## Conventional Static Single-Assignment Form
+
 CSSA-form programs have the following definition, which we quote from the paper [SSA Elimination after Register Allocation](https://homepages.dcc.ufmg.br/~fernando/publications/papers/CC09.pdf): *A program is in CSSA form if no two variables related by phi-functions have overlapping live ranges*.
 Figure 1 below explains the notion of phi-related variables with examples.
 
@@ -27,9 +30,12 @@ To help you understand how this semantics works, take a look into Figure 2 below
 
 ![Running the factorial function](../assets/images/ssaFact.png)
 
-This semantics will work fine for CSSA-form programs.
+This "pick-last" semantics will work fine for CSSA-form programs.
 And it is rather elegant: we do not need to keep track of the path used to reach a phi-function: the last binding within its list of uses will be always the correct assignment (want to know why? Remember that the definition of a variable dominates its uses in an SSA-form program!).
-However, this semantics will collapse for non-CSSA form programs.
+
+## The Swap Problem
+
+However, the pick-last semantics will collapse for non-CSSA form programs.
 And these programs do exist.
 Most algorithms that convert a program to SSA form will in fact create CSSA-form programs.
 However, some compiler optimizations might propagate copies, breaking the conventional property.
@@ -55,13 +61,14 @@ Once a phi-block is evaluated, all the values in a given column of this matrix a
 To see a more detailed explanation of this semantics, please, refer to Section 3 of the paper '[SSA Elimination after Register Allocation](https://homepages.dcc.ufmg.br/~fernando/publications/papers/CC09.pdf)'.
 Most of the implementation of the `PhiBlock` class is done for you; there will
 be only three small parts that you need to complete.
+Additionally, there is one small change that must be performed in [lang.py](lang.py): you must update the `interp` function, so that it passes the identifier of the last instruction to a phi-block.
+The phi-block will use this identifier as a selector to choose the right parallel assignment to implement.
 The [doctests](https://docs.python.org/3/library/doctest.html) will guide you through this process through interactive examples.
 
 ## Uploading the Assignment
 
 Students enrolled in DCC888 have access to UFMG's grading system, via [Moodle](https://moodle.org/).
-You must upload four python files to have your assignment graded: [driver.py](driver.py), [lang.py](lang.py), [parser.py](parser.py) and
-[dataflow.py](dataflow.py).
+You must upload three python files to have your assignment graded: [driver.py](driver.py), [lang.py](lang.py), and [program.py](program.py).
 Remember to click on "*Avaliar*" to have your assignment graded.
 
 ## Testing without Moodle
@@ -70,18 +77,14 @@ As in the previous labs, all the files in this exercise contain `doctest` commen
 You can easily test your implementation by doing, for instance:
 
 ```
-python3 -m doctest dataflow.py
+python3 -m doctest lang.py
 ```
-
-As an example, the program in Figure 2 can be tested using the series of Python statements seen in Figure 3.
-
-![Example of doctest for dominance relation](../assets/images/testDominance.png)
 
 This lab also provides a [folder](tests) with some test cases.
 To simulate automatic grading, you can run [drive.py](driver.py) directly, e.g.:
 
 ```
-python3 driver.py < tests/fib.txt
+python3 driver.py < tests/fib0.txt
 ```
 
-In this exercise, the driver prints the dominance tree of each program.
+In this exercise, the driver runs particular programs (implemented using our three-address SSA-form language) with the inputs in the text file.
