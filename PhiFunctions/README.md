@@ -28,16 +28,34 @@ To help you understand how this semantics works, take a look into Figure 2 below
 ![Running the factorial function](../assets/images/ssaFact.png)
 
 This semantics will work fine for CSSA-form programs.
-And it is rather elegant: we do not need to keep track of the path used to reach a phi-function: the last binding within its list of uses will be always the correct assignment!
+And it is rather elegant: we do not need to keep track of the path used to reach a phi-function: the last binding within its list of uses will be always the correct assignment (want to know why? Remember that the definition of a variable dominates its uses in an SSA-form program!).
 However, this semantics will collapse for non-CSSA form programs.
 And these programs do exist.
-Most algorithms that create SSA form will in fact create CSSA-form programs.
+Most algorithms that convert a program to SSA form will in fact create CSSA-form programs.
 However, some compiler optimizations might propagate copies, breaking the conventional property.
 That is what happened in Figure 1-d.
-In this case, we start having issues like the infamous "swap problem" and the "lost-copy problem" which Preston Briggs described in the early days of [SSA designing](https://homes.luddy.indiana.edu/achauhan/Teaching/B629/2006-Fall/CourseMaterial/1998-spe-briggs-ssa_improv.pdf).
+In this case, we start having issues like the infamous "*swap problem*" and the "*lost-copy problem*" which Preston Briggs described in the early days of [SSA design](https://homes.luddy.indiana.edu/achauhan/Teaching/B629/2006-Fall/CourseMaterial/1998-spe-briggs-ssa_improv.pdf).
 Figure 3 illustrates the swap problem.
 
 ![The Swap Problem](../assets/images/ssaPrograms.png)
+
+Thus, to correctly implement the semantics of phi-functions, all the phi-functions at some join point in a program must be evaluated together in two steps:
+
+1. We read the variables in the incoming path that leads to the phi-functions.
+2. We assign the variables that are defined by the phi-functions.
+
+Figure 4 illustrates how this semantics works:
+
+![The Semantics of Phi-Functions](../assets/images/phiSemantics.png)
+
+In the second part of this lab, we shall implement the correct semantics of Phi-Functions.
+To this effect, you must finish the implementation of the class `PhiBlock`.
+A phi-block groups a number of phi-functions as a matrix.
+Once a phi-block is evaluated, all the values in a given column of this matrix are read and saved, and then the definitions are updated --- all in parallel.
+To see a more detailed explanation of this semantics, please, refer to Section 3 of the paper '[SSA Elimination after Register Allocation](https://homepages.dcc.ufmg.br/~fernando/publications/papers/CC09.pdf)'.
+Most of the implementation of the `PhiBlock` class is done for you; there will
+be only three small parts that you need to complete.
+The [doctests](https://docs.python.org/3/library/doctest.html) will guide you through this process through interactive examples.
 
 ## Uploading the Assignment
 
