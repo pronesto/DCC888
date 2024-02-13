@@ -51,3 +51,8 @@ In this [lab](/Worklist), the student will implement a [worklist-based](https://
 ### Dominators
 
 In this [lab](/Dominance), the student will implement a data-flow analysis to compute the [dominance tree](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/LoopOptimizations.pdf) of a program.
+
+
+### Semantics of Phi-Functions
+
+In this [lab](/PhiFunctions), the student will add phi-functions to our toy three-address code language, so that we can write programs in [Static Single-Assignment Form](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/StaticSingleAssignment.pdf).
