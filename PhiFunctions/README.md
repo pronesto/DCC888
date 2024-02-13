@@ -14,7 +14,7 @@ In the first part, we shall implement a "tentative" semantics for phi-functions.
 I say tentative because it will only work for a very special flavor of SSA-form programs: the so-called programs in *Conventional Static Single-Assignment (CSSA)
 Form*.
 
-## Conventional Static Single-Assignment Form
+### Conventional Static Single-Assignment Form
 
 CSSA-form programs have the following definition, which we quote from the paper [SSA Elimination after Register Allocation](https://homepages.dcc.ufmg.br/~fernando/publications/papers/CC09.pdf): *A program is in CSSA form if no two variables related by phi-functions have overlapping live ranges*.
 Figure 1 below explains the notion of phi-related variables with examples.
@@ -33,7 +33,7 @@ To help you understand how this semantics works, take a look into Figure 2 below
 This "pick-last" semantics will work fine for CSSA-form programs.
 And it is rather elegant: we do not need to keep track of the path used to reach a phi-function: the last binding within its list of uses will be always the correct assignment (want to know why? Remember that the definition of a variable dominates its uses in an SSA-form program!).
 
-## The Swap Problem
+### The Swap Problem
 
 However, the pick-last semantics will collapse for non-CSSA form programs.
 And these programs do exist.
