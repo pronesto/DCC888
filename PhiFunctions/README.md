@@ -88,3 +88,14 @@ python3 driver.py < tests/fib0.txt
 ```
 
 In this exercise, the driver runs particular programs (implemented using our three-address SSA-form language) with the inputs in the text file.
+
+## Further Reading
+
+Static-Single Assignment form exists since the late eighties.
+One of the most well-known papers on this subject is [Cytron's](https://dl.acm.org/doi/10.1145/115372.115320).
+That paper introduces the [algorithm that we saw in the classroom](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/StaticSingleAssignment.pdf) to insert phi-functions in the program.
+However, today, compilers usually use [Sreedhar's Algorithm](https://dl.acm.org/doi/10.1145/199448.199464) instead.
+In fact, it was [Sreedhar](https://link.springer.com/chapter/10.1007/3-540-48294-6_13) and his colleagues that introduced the notion of Conventional Static Single-Assignment form.
+The "Conventional" property would often emerge in the context of register allocation: a way to remove phi-functions is to allocate all the phi-related variables with the same register.
+But if these variables have overlapping live ranges...
+The [paper](https://homepages.dcc.ufmg.br/~fernando/publications/papers/CC09.pdf) that we quote in this lab ("SSA Elimination after Register Allocation") when explaining CSSA form exists exactly in this context: it shows how to allocate the same register or memory location to all the variables in a phi-function.
