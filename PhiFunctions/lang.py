@@ -77,11 +77,7 @@ class Env:
             4
         """
         # TODO: Implement this method
-        val = next((v for (var, v) in self.env if var in vars), None)
-        if val is not None:
-            return val
-        else:
-            raise LookupError(f"Absent key {var}")
+        return 0
 
     def set(s, var, value):
         """
@@ -270,7 +266,8 @@ class PhiBlock(Inst):
         """
         self.phis = phis
         # TODO: implement the rest of this method
-        self.selectors = {ID: index for index, ID in enumerate(selector_IDs)}
+        # here...
+        #########################################
         super().__init__()
 
     def definition(self):
@@ -304,13 +301,7 @@ class PhiBlock(Inst):
 
     def eval(self, env, PC):
         # TODO: Read all the definitions
-        phi_env = {
-            phi.definition(): env.get(phi.uses()[self.selectors[PC]])
-            for phi in self.phis
-        }
         # TODO: Assign all the uses:
-        for phi_def, phi_val in phi_env.items():
-            env.set(phi_def, phi_val)
 
     def __str__(self):
         block_str = "\n".join([str(phi) for phi in self.phis])
@@ -507,12 +498,15 @@ def interp(instruction, environment, PC=0):
         2
     """
     if instruction:
+        print("----------------------------------------------------------")
+        print(instruction)
+        environment.dump()
         if isinstance(instruction, PhiBlock):
             # TODO: implement this part:
-            instruction.eval(environment, PC)
+            pass
         else:
             # TODO: implement this part:
-            instruction.eval(environment)
+            pass
         return interp(instruction.get_next(), environment, instruction.ID)
     else:
         return environment

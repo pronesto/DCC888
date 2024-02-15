@@ -13,6 +13,9 @@ This assignment has two parts.
 In the first part, we shall implement a "tentative" semantics for phi-functions.
 I say tentative because it will only work for a very special flavor of SSA-form programs: the so-called programs in *Conventional Static Single-Assignment (CSSA)
 Form*.
+In the second part, we shall implement the "correct" semantics of phi-functions, using a notion of 'phi-block'.
+All these implementations must be done in [lang.py](lang.py).
+This file has a few `TODO` comments that mark the places where interventions are expected.
 
 ### Conventional Static Single-Assignment Form
 
@@ -23,7 +26,7 @@ Figure 1 below explains the notion of phi-related variables with examples.
 
 This tentative semantics for phi-functions will be implemented as follows:
 given a phi-function such as `a0 = phi(a1, ..., an)`, we shall find, in the environment, the latest binding for any of the variables in the set `{a1, ..., an}`, and then assign this value to `a0`.
-The class `Phi` is already implemented for you.
+The class `Phi` is already implemented for you in [lang.py](lang.py).
 Notice that this class invokes a method on the environment called `get_from_list`.
 In this assignment, you will have to implement this method.
 To help you understand how this semantics works, take a look into Figure 2 below:
