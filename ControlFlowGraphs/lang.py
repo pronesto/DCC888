@@ -84,6 +84,14 @@ class Inst(ABC):
     def add_next(self, next_inst):
         self.NEXTS.append(next_inst)
 
+    @abstractmethod
+    def eval(s, env):
+        """
+        Derived classes that don't implement this method will also be abstract,
+        such as BinOp
+        """
+        pass
+
     @classmethod
     @abstractmethod
     def definition(self):
