@@ -345,7 +345,7 @@ def build_dependence_graph(equations):
         >>> i0.add_next(i1)
         >>> eqs = reaching_defs_constraint_gen([i0, i1])
         >>> deps = build_dependence_graph(eqs)
-        >>> [eq.name() for eq in deps['IN_1']]
+        >>> [eq.name() for eq in deps['IN_0']]
         ['OUT_0']
     """
     # TODO: implement this method
