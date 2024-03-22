@@ -267,6 +267,7 @@ class PhiBlock(Inst):
         self.phis = phis
         # TODO: implement the rest of this method
         # here...
+        # self.selectors = ...
         #########################################
         super().__init__()
 
@@ -299,9 +300,10 @@ class PhiBlock(Inst):
         """
         return sum([phi.uses() for phi in self.phis], [])
 
-    def eval(self, env, PC):
+    def eval(self, env: Env, PC: int):
         # TODO: Read all the definitions
         # TODO: Assign all the uses:
+        pass
 
     def __str__(self):
         block_str = "\n".join([str(phi) for phi in self.phis])
@@ -473,7 +475,7 @@ class Bt(Inst):
         return inst_s + pred_s + next_s
 
 
-def interp(instruction, environment, PC=0):
+def interp(instruction: Inst, environment: Env, PC=0):
     """
     This function evaluates a program until there is no more instructions to
     evaluate. Notice that, in contrast to the previous labs, the interpreter

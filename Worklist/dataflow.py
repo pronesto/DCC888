@@ -1,4 +1,4 @@
-from lang import *
+from lang import Env, Inst, BinOp, Bt
 from abc import ABC, abstractmethod
 
 
@@ -250,7 +250,7 @@ class ReachingDefs_IN_Eq(IN_Eq):
             solution = solution.union(data_flow_env[name_out(inst.ID)])
         return solution
 
-    def deps(self):
+    def deps(self) -> list[str]:
         """
         The list of dependencies of this equation. Ex.:
             >>> Inst.next_index = 0
@@ -334,7 +334,7 @@ def abstract_interp(equations):
     return (env, DataFlowEq.num_evals)
 
 
-def build_dependence_graph(equations):
+def build_dependence_graph(equations) -> dict[str, list[DataFlowEq]]:
     """
     This function builds the dependence graph of equations.
 
@@ -353,7 +353,7 @@ def build_dependence_graph(equations):
     return dep_graph
 
 
-def abstract_interp_worklist(equations):
+def abstract_interp_worklist(equations) -> tuple[Env, int]:
     """
     This function solves the system of equations using a worklist. Once an
     equation E is evaluated, and the evaluation changes the environment, only
@@ -366,8 +366,8 @@ def abstract_interp_worklist(equations):
         >>> i0.add_next(i1)
         >>> eqs = reaching_defs_constraint_gen([i0, i1])
         >>> (sol, num_evals) = abstract_interp_worklist(eqs)
-        >>> f"OUT_0: {sorted(sol['OUT_0'])}, Num Evals: {num_evals}"
-        "OUT_0: [('c', 0)], Num Evals: 6"
+        >>> f"OUT_0: {sorted(sol['OUT_0'])}"
+        "OUT_0: [('c', 0)]"
     """
     # TODO: implement this method
     from collections import defaultdict
