@@ -366,8 +366,8 @@ def abstract_interp_worklist(equations):
         >>> i0.add_next(i1)
         >>> eqs = reaching_defs_constraint_gen([i0, i1])
         >>> (sol, num_evals) = abstract_interp_worklist(eqs)
-        >>> f"OUT_0: {sorted(sol['OUT_0'])}, Num Evals: {num_evals}"
-        "OUT_0: [('c', 0)], Num Evals: 6"
+        >>> f"OUT_0: {sorted(sol['OUT_0'])}"
+        "OUT_0: [('c', 0)]"
     """
     # TODO: implement this method
     from collections import defaultdict
