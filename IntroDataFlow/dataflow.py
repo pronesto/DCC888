@@ -1,4 +1,4 @@
-from lang import *
+from lang import Inst, BinOp, Bt
 from abc import ABC, abstractmethod
 
 
@@ -226,7 +226,7 @@ class ReachingDefs_IN_Eq(IN_Eq):
 
 
 class LivenessAnalysisIN_Eq(IN_Eq):
-    def eval_aux(self, data_flow_env):
+    def eval_aux(self, data_flow_env: dict[str, set]) -> None:
         """
         Produces the IN set of liveness analysis. The IN set is given by the
         equation below, considering the instruction `p) v = E`:
@@ -241,7 +241,6 @@ class LivenessAnalysisIN_Eq(IN_Eq):
             ['a', 'b']
         """
         # TODO: implement this method
-        return None
 
     def __str__(self):
         """
@@ -259,7 +258,7 @@ class LivenessAnalysisIN_Eq(IN_Eq):
 
 
 class LivenessAnalysisOUT_Eq(OUT_Eq):
-    def eval_aux(self, data_flow_env):
+    def eval_aux(self, data_flow_env: dict[str, set]) -> None:
         """
         Computes the join (or meet) operation of the liveness analysis. The
         join of a point `p` is computed in the following way:
@@ -276,7 +275,6 @@ class LivenessAnalysisOUT_Eq(OUT_Eq):
             ['a', 'c', 'd']
         """
         # TODO: implement this method
-        return None
 
     def __str__(self):
         """
@@ -318,7 +316,7 @@ def reaching_defs_constraint_gen(insts):
     return in0 + in1 + out
 
 
-def liveness_constraint_gen(insts):
+def liveness_constraint_gen(insts: list[Inst]) -> list[DataFlowEq]:
     """
     Builds a list of liness-analysis equations extracted from the instructions
     in the list `insts`
@@ -334,7 +332,7 @@ def liveness_constraint_gen(insts):
         "IN_0: (OUT_0 - {'c'}) + ['a', 'b'] IN_1: (OUT_1 - {'d'}) + ['a', 'c']"
     """
     # TODO: implement this method.
-    return None
+    return []
 
 
 def abstract_interp(equations):
