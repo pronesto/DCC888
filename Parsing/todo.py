@@ -13,10 +13,10 @@ As an example, the program below sums up the numbers a, b and c:
     l2 = x = add x c
 """
 
-from lang import *
+from lang import Env, Inst
 
 
-def line2env(line):
+def line2env(line: str) -> Env:
     """
     Maps a string (the line) to a dictionary in python. This function will be
     useful to read the first line of the text file. This line contains the
@@ -36,7 +36,7 @@ def line2env(line):
     return env_lang
 
 
-def file2cfg_and_env(lines):
+def file2cfg_and_env(lines: list[str]) -> tuple[Env, list[Inst]]:
     """
     Builds a control-flow graph representation for the strings stored in
     `lines`. The first string represents the environment. The other strings

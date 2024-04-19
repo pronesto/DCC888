@@ -5,7 +5,7 @@ SSA form programs enjoy an important property: the definition site of a variable
 In practical terms, SSA is more of a notation than an actual program implementation; however, it is still possible to interpret these programs.
 In this exercise, we shall do exactly this: write an interpreter for SSA-form programs.
 We shall try two approaches: first, we will give some semantics to phi-functions, and then we will see that we, in fact, need more: to correctly implement the semantics of phi-functions, we need to evaluate them as parallel copies.
-This lab refer to the class on static single-assignment form, which is part of the [material](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/StaticSingleAssignment.pdf) covered in the classroom.
+This lab refers to the class on static single-assignment form, which is part of the [material](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/StaticSingleAssignment.pdf) covered in the classroom.
 
 ## The Assignment
 
