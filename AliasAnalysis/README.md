@@ -14,10 +14,32 @@ This file contains one method `abstract_interp`, which you must implement.
 This method receives as input a list of instructions, and returns the environment of points-to information created by these instructions.
 In addition to the instructions in our previous labs, we shall have to deal with four new kinds of instructions:
 
-1. `v = alloca`:
-2. `v = move w`:
-3. `*v = w`:
-4. `w = *v`:
+1. `v = alloca`: Creates a new memory location (called ir `r`), and makes `v` point to `r`.
+2. `v = move w`: Moves the contents of `w` into `v`.
+3. `*v = w`: Stores the contents of `w` into the memory location referenced by `v`.
+4. `w = *v`: Loads the contents of the memory location references by `v` into `w`.
+
+We shall be solving alias analysis using [Andersen's](http://www.cs.cornell.edu/courses/cs711/2005fa/papers/andersen-thesis94.pdf) approach.
+Lars Ole Andersen solved alias analysis as a set of *Inclusion-Based* constraints such as `Alias(a) >= Alias(b)`, meaning that anything that `b` points to might also be pointed to by `a`.
+The different instructions in the program give origin to constraints like these.
+However, alias analysis cannot be solved just like a simple data-flow analysis, because the set of constraints is not known beforehand.
+More constraints are created as we discover more points-to relations.
+Figure 1 shows how these constraints are created.
+
+![Equations that compute alias relations](../assets/images/aliasAnalysis0.png)
+
+In Figure 1 we use the notation `Prog:Lx` to denote Line `x` of the program.
+The line number is only important to name memory locations.
+We call every memory location created at line `x` as `ref_x`.
+So, to solve alias analysis we do as follows:
+
+1. Process all the initialization constraints, to populate the environment (the Alias table in Figure 1) with points-to information.
+2. Create a new set *G* of inclusion-based constraints with all the move instructions. Each move instruction such as `a = b` will add a constraint `Alias(a) >= Alias(b)` to *G*.
+3. Repeat the following steps, until the alias sets stop changing:
+-- 3.a: For each constraint `Alias(a) >= Alias(b)` in *G*, move all the points-to information from `Alias(b)` into `Alias(a)`.
+-- 3.b: For each instruction `*v = w`, for each `t` in `Alias(v)`, add a new constraint `Alias(t) >= Alias(w)` to *G*.
+-- 3.c: For each instruction `w = *v`, for each `t` in `Alias(v)`, add a new constraint `Alias(w) >= Alias(t)` to *G*.
+
 
 ## Uploading the Assignment
 
