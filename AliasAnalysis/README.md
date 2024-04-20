@@ -36,13 +36,27 @@ So, to solve alias analysis we do as follows:
 1. Process all the initialization constraints, to populate the environment (the Alias table in Figure 1) with points-to information.
 2. Create a new set *G* of inclusion-based constraints with all the move instructions. Each move instruction such as `a = b` will add a constraint `Alias(a) >= Alias(b)` to *G*.
 3. Repeat the following steps, until the alias sets stop changing:
-  1. For each constraint `Alias(a) >= Alias(b)` in *G*, move all the points-to information from `Alias(b)` into `Alias(a)`.
-  2. For each instruction `*v = w`, for each `t` in `Alias(v)`, add a new constraint `Alias(t) >= Alias(w)` to *G*.
-  3. For each instruction `w = *v`, for each `t` in `Alias(v)`, add a new constraint `Alias(w) >= Alias(t)` to *G*.
+    1. For each constraint `Alias(a) >= Alias(b)` in *G*, move all the points-to information from `Alias(b)` into `Alias(a)`.
+    2. For each instruction `*v = w`, for each `t` in `Alias(v)`, add a new constraint `Alias(t) >= Alias(w)` to *G*.
+    3. For each instruction `w = *v`, for each `t` in `Alias(v)`, add a new constraint `Alias(w) >= Alias(t)` to *G*.
 
 Figure 2 below shows an example of how this algorithm works.
 
 ![Example showing how alias analysis works](../assets/images/aliasAnalysis1.png)
+
+## Implementing the Assignment
+
+You are free to implement function `abstract_interp` pretty much in any way you want.
+However, to help you out, the function contains some comments explaining the steps that you must implement.
+These steps have been organized into five functions, whose signature is given in the assignment.
+These functions all come with doctests, which you can use to guide you throughout the implementation effort:
+
+1. `Edge.eval`: the abstract evaluation of a constraint such as `Alias(a) >= Alias(b)`
+2. `init_env`: the function that creates the initial alias table (called `env` in the assignment).
+3. `propagate_alias_info`: the function that evaluates all the constraints such as `Alias(a) >= Alias(b)`.
+4. `evaluate_st_constraints` and `evaluate_ld_constraints`: the functions that evaluate the complex constraints.
+
+If you have implemented all these five functions, then you can organize them inside `abstract_interp`, following the comments within that function.
 
 ## Uploading the Assignment
 
