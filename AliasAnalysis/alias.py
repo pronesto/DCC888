@@ -48,7 +48,14 @@ def init_env(insts) -> dict[str, set[str]]:
     Uses the basic constraints derived from alloca instructions to initialize
     the environment.
 
-    Example:
+    Important: You should use the static name of a memory location to
+    initialize the alias table. For instance, if you have an instruction
+    such as inst == `v = Alloca` in the program, then you can get the static
+    name of the memory location with `Storage.stc_loc_name(inst.ID)`. If the
+    ID of inst is, say, X, then you get a name like `ref_X`. The example below
+    will help you understand how you can bind a name to the memory location
+    created by an instruction:
+
         >>> Inst.next_index = 0
         >>> i0 = Alloca('v')
         >>> i1 = Alloca('v')
@@ -166,5 +173,6 @@ def abstract_interp(insts) -> dict[str, set[str]]:
 
         # 3.b: Propagate the points-to information:
         #
+        pass
 
     return None

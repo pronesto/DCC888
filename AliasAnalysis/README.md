@@ -21,6 +21,7 @@ In addition to the instructions in our previous labs, we shall have to deal with
 
 We shall be solving alias analysis using [Andersen's](http://www.cs.cornell.edu/courses/cs711/2005fa/papers/andersen-thesis94.pdf) approach.
 Lars Ole Andersen solved alias analysis as a set of *Inclusion-Based* constraints such as `Alias(a) >= Alias(b)`, meaning that anything that `b` points to might also be pointed to by `a`.
+See Section 2 of the [Wave Propagation Paper](https://homepages.dcc.ufmg.br/~fernando/publications/papers/CGO09.pdf) for more details on how the analysis works.
 The different instructions in the program give origin to constraints like these.
 However, alias analysis cannot be solved just like a simple data-flow analysis, because the set of constraints is not known beforehand.
 More constraints are created as we discover more points-to relations.
@@ -82,3 +83,25 @@ python3 driver.py < tests/ref0.txt
 ```
 
 In this exercise, the driver prints the table of points-to information.
+This lab also provides a [folder](tests) with some test cases.
+To simulate automatic grading, you can run [drive.py](driver.py) directly, e.g.:
+
+```
+python3 driver.py < tests/ref0.txt
+```
+
+## Theoretical Questions
+
+1. Figure 1 determines a dynamic constraint system: new constraints are created
+whenever more information is bound to each alias table, due to the store
+and load instructions. Then poinst-to information is propagated throughout the
+new constraints. How do you know that this algorithm to solve the constraint
+system ever terminates?
+
+2. Figure 2.g shows an image of the heap, produced with a solution of the alias analysis. Each dashed line from `a` to `b` indicates that the pointer `a` can reference the memory location `b`. If such an edge exists, then is it the case that necessarily the address of `b` will ever be the value of `a`?
+
+3. Let's take a look into the complement of Question 2 above: if the solution of the alias analysis does not determine a dashed edge from `a` to `b`, does it mean that there is no way, ever, that during the execution of the program, variable `a` can point to variable `b`?
+
+4. The constraints such as `Alias(a) >= Alias(b)`, which are either created by `Move` instructions, or as a result of the evaluation of the complex constraints, determine a graph. Figures 2.c, 2.e and 2.f show instances of this points-to graph. A efficient way to solve a constraint system is to collapse cycles in this graph, unifying the points-to information of all the nodes in the strong component that was merged.
+See Section 2 of the [Wave Propagation Paper](https://homepages.dcc.ufmg.br/~fernando/publications/papers/CGO09.pdf) for more details.
+Why is it correct to merge nodes involved in a cycle?
