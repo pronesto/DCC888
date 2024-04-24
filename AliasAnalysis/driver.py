@@ -4,6 +4,7 @@ import alias
 
 from lang import interp, Storage
 
+
 def run_concrete_semantics(env, program):
     """
     Calls the interpreter on the input program with the given input environemnt.
@@ -12,6 +13,7 @@ def run_concrete_semantics(env, program):
     interp(program[0], env, storage)
     env.dump()
     storage.dump()
+
 
 def run_abstract_semantics(program):
     """
@@ -23,6 +25,7 @@ def run_abstract_semantics(program):
             print(f"{name}, {sorted(abstract_env[name])}")
     else:
         print("The program has no memory allocation.")
+
 
 def check_pointers(program):
     """
@@ -40,6 +43,7 @@ def check_pointers(program):
         print(f"Alias(ref2): {sorted(abstract_env.setdefault('ref_2', set()))}")
     else:
         print("The program has no memory allocation.")
+
 
 if __name__ == "__main__":
     lines = sys.stdin.readlines()

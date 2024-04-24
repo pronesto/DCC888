@@ -21,7 +21,7 @@ class Storage:
         >>> s = Storage()
         >>> x = s.alloca(0)
         >>> s.store(x, 1)
-        >>> s.load(x) 
+        >>> s.load(x)
         1
     """
 

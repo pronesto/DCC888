@@ -7,6 +7,7 @@ integer values.
 import re
 from lang import *
 
+
 def line2Inst(line):
     """
     Converts a line to an instruction.
@@ -38,6 +39,7 @@ def line2Inst(line):
     else:
         raise ValueError(f"Invalid instruction: {line}")
 
+
 def parse_load(line):
     """
     Converts a line that contains the structure '*p = s' into a store.
@@ -54,6 +56,7 @@ def parse_load(line):
     pattern = r"([a-zA-Z][a-zA-Z0-9]*)\s*=\s*\*\s*([a-zA-Z][a-zA-Z0-9]*)"
     match = re.search(pattern, line)
     return Load(match.group(1), match.group(2)) if match else None
+
 
 def parse_store(line):
     """
@@ -72,6 +75,7 @@ def parse_store(line):
     match = re.search(pattern, line)
     return Store(match.group(1), match.group(2)) if match else None
 
+
 def line2MoveOp(line, creator):
     """
     Converts a line that contains the structure 'd = op s' to an instruction.
@@ -88,6 +92,7 @@ def line2MoveOp(line, creator):
     (dst, _, _, src) = line.split()
     return creator(dst, src)
 
+
 def line2Alloca(line, creator):
     """
     Converts a line that contains the structure 'alloca d' to an instruction.
@@ -96,6 +101,7 @@ def line2Alloca(line, creator):
     """
     (dst, _, _) = line.split()
     return creator(dst)
+
 
 def line2BinOp(line, creator):
     """
@@ -108,6 +114,7 @@ def line2BinOp(line, creator):
     """
     (dst, _, _, src0, src1) = line.split()
     return creator(dst, src0, src1)
+
 
 def line2Bt(line):
     """
@@ -127,6 +134,7 @@ def line2Bt(line):
     bt.offset = int(offset)
     return bt
 
+
 def line2env(line):
     """
     Maps a string (the line) to a dictionary in python.
@@ -136,11 +144,13 @@ def line2env(line):
         1
     """
     import json
+
     env_dict = json.loads(line)
     env_lang = Env()
     for k, v in env_dict.items():
         env_lang.set(k, v)
     return env_lang
+
 
 def file2cfg_and_env(lines):
     """
@@ -179,9 +189,9 @@ def file2cfg_and_env(lines):
     """
     env = line2env(lines[0])
     insts = [line2Inst(line) for line in lines[1:]]
-    for i in range(len(insts)-1):
-        insts[i].add_next(insts[i+1])
+    for i in range(len(insts) - 1):
+        insts[i].add_next(insts[i + 1])
     for b in insts:
-        if hasattr(b, 'offset'):
+        if hasattr(b, "offset"):
             b.add_true_next(insts[b.offset])
     return (env, insts)

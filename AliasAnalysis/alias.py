@@ -3,11 +3,12 @@ from functools import reduce
 from abc import ABC, abstractmethod
 
 
-class Edge():
+class Edge:
     """
     This class implements the edge of the points-to graph that is used to
     solve Andersen-style alias analysis.
     """
+
     def __init__(self, dst: str, src: str):
         """
         An edge dst -> src indicates that every pointer in dst must be also
@@ -42,6 +43,7 @@ class Edge():
             'Alias(a) >= Alias(b)'
         """
         return f"Alias({self.dst}) >= Alias({self.src})"
+
 
 def init_env(insts) -> dict[str, set[str]]:
     """
