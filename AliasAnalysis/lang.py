@@ -1,7 +1,7 @@
 """
 This file contains the implementation of a simple interpreter of low-level
-instructions. The interpreter contains instructions to manipulate SSA-like
-immutable values, and also memory references.
+instructions. The interpreter contains instructions to manipulate a language
+with variables and memory references.
 
 This file uses doctests all over. To test it, just run python 3 as follows:
 "python3 -m doctest main.py". The program uses syntax that is excluive of
