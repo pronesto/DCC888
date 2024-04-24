@@ -1,0 +1,6 @@
+{"one": 1}
+p0 = alloca
+*p0 = one
+var = *p0
+p1 = alloca
+*p1 = var
