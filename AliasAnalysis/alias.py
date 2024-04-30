@@ -11,8 +11,8 @@ class Edge:
 
     def __init__(self, dst: str, src: str):
         """
-        An edge dst -> src indicates that every pointer in dst must be also
-        within the alias set of src.
+        An edge src -> dst indicates that every pointer in src must be also
+        within the alias set of dst.
         """
         self.src = src
         self.dst = dst
