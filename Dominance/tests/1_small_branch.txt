@@ -1,0 +1,5 @@
+{"a": 0, "b": 3}
+bt a 3
+x = add a b
+y = add x b
+x = mul a b
