@@ -1,4 +1,0 @@
-- [ ] Implement constraint system using DataFlowEq (slide 60)
-- [ ] Doctest on SSA-Form programs
-- [ ] Implement auxiliar function to sparsify code
-- [ ] Doctest on non-SSA programs

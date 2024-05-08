@@ -191,10 +191,9 @@ def abstract_interp(equations, program_env: Env):
     """
     from functools import reduce
 
-    
-
+    copy_env = Env(program_env.to_dict())
     DataFlowEq.num_evals = 0
     changed = True
     while changed:
-        changed = reduce(lambda acc, eq: eq.eval(program_env) or acc, equations, False)
-    return (program_env, DataFlowEq.num_evals)
+        changed = reduce(lambda acc, eq: eq.eval(copy_env) or acc, equations, False)
+    return (copy_env, DataFlowEq.num_evals)
