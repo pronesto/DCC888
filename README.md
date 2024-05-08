@@ -56,3 +56,8 @@ In this [lab](/Dominance), the student will implement a data-flow analysis to co
 ### Semantics of Phi-Functions
 
 In this [lab](/PhiFunctions), the student will add phi-functions to our toy three-address code language, so that we can write programs in [Static Single-Assignment Form](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/StaticSingleAssignment.pdf).
+
+
+### Alias Analysis
+
+In this [lab](/AliasAnalysis), the student will implement a version of Andersen-style Alias Analysis, following the lecture notes seen in [class](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/PointerAnalysis.pdf).

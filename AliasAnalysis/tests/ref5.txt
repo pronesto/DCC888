@@ -1,0 +1,4 @@
+{"one": 1}
+p0 = alloca
+*p0 = one
+two = *p0
