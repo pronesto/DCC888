@@ -92,23 +92,23 @@ class SparseDataFlowEq(DataFlowEq):
     This class inherits attributes from DataFlowEq.
     """
 
-    def eval_aux(self, data_flow_env: dict):
+    def eval_aux(self, data_flow_env: Env):
         """
         This method determines how each concrete equation evaluates itself.
         Note that now the the reveived state is updated locally.
         """
         raise NotImplementedError
 
-    def eval(self, data_flow_env: dict) -> bool:
+    def eval(self, data_flow_env: Env) -> bool:
         """
         This method implements the abstract evaluation of a data-flow equation.
         Notice that the actual semantics of this evaluation will be implemented
         by the `eval_aux` method, which is abstract.
         """
         DataFlowEq.num_evals += 1
-        old_env = data_flow_env.copy()
+        old_env = data_flow_env.to_dict()
         self.eval_aux(data_flow_env)
-        return True if data_flow_env != old_env else False
+        return True if data_flow_env.to_dict() != old_env else False
 
     def deps(self):
         return {}
@@ -150,9 +150,9 @@ class SparseConstantPropagation(SparseDataFlowEq):
             >>> i0.add_next(i1)
             >>> i1.add_next(i2)
             >>> df = SparseConstantPropagation(i2)
-            >>> env = {'ZERO': 0, 'x': 0, 'y': 'NAC'}
+            >>> env = Env({'ZERO': 0, 'x': 0, 'y': 'NAC'})
             >>> df.eval_aux(env)
-            >>> sorted(env.items())
+            >>> sorted(env.to_dict().items())
             [('ZERO', 0), ('x', 0), ('y', 'NAC'), ('z', 'NAC')]
         """
         if type(self.inst) is Bt:
@@ -185,7 +185,7 @@ def abstract_interp(equations, program_env: Env):
         >>> i3.add_next(i4)
         >>> eqs = constant_prop_constraint_gen([i0, i1, i2, i3, i4])
         >>> (sol, num_evals) = abstract_interp(eqs, env)
-        >>> sorted(sol.items())
+        >>> sorted(sol.to_dict().items())
         [('a0', 1), ('a1', 2), ('a2', 'NAC'), ('b0', 'NAC'), ('c0', 'NAC'), ('one', 1), ('zero', 0)]
 
     """
@@ -197,4 +197,4 @@ def abstract_interp(equations, program_env: Env):
     changed = True
     while changed:
         changed = reduce(lambda acc, eq: eq.eval(program_env) or acc, equations, False)
-    return (env, DataFlowEq.num_evals)
+    return (program_env, DataFlowEq.num_evals)
