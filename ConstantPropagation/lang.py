@@ -76,7 +76,6 @@ class Env:
             >>> e.get_from_list(["b", "a"])
             4
         """
-        # TODO: Implement this method
         return 0
 
     def set(s, var, value):
@@ -93,6 +92,12 @@ class Env:
         """
         for var, value in s.env:
             print(f"{var}: {value}")
+
+    def to_dict(s):
+        d = dict()
+        for var, value in reversed(s.env):
+            d[var] = value 
+        return d 
 
 
 class Inst(ABC):
@@ -171,7 +176,7 @@ class Phi(Inst):
         super().__init__()
 
     def definition(s):
-        return s.dst
+        return {s.dst}
 
     def uses(s):
         return s.args
@@ -211,6 +216,30 @@ class Phi(Inst):
         next_s = f"\n  N: {self.nexts[0].ID if len(self.nexts) > 0 else ''}"
         return inst_s + pred_s + next_s
 
+class Read(Inst):
+    """
+    The Read instruction introduces non-constant values to the program.
+    This blocking instruction requests a numerical input from the user.
+    """
+    def __init__(s, dst):
+        s.dst = dst
+        super().__init__()
+
+    def definition(s):
+        return {s.dst}
+
+    def uses(s):
+        return set()
+
+    def eval(s, env):
+        input_value = input(f'value for {s.dst}: ')
+        env.set(s.dst, int(input_value))
+
+    def __str__(self):
+        inst_s = f"{self.ID}: {self.dst} = INPUT"
+        pred_s = f"\n  P: {', '.join([str(inst.ID) for inst in self.preds])}"
+        next_s = f"\n  N: {self.nexts[0].ID if len(self.nexts) > 0 else ''}"
+        return inst_s + pred_s + next_s
 
 class PhiBlock(Inst):
     """
@@ -283,7 +312,7 @@ class PhiBlock(Inst):
             >>> sorted(aa.definition())
             ['a0', 'a1']
         """
-        return [phi.definition() for phi in self.phis]
+        return set([phi.definition() for phi in self.phis])
 
     def uses(self):
         """
@@ -500,15 +529,10 @@ def interp(instruction: Inst, environment: Env, PC=0):
         2
     """
     if instruction:
-        print("----------------------------------------------------------")
-        print(instruction)
-        environment.dump()
         if isinstance(instruction, PhiBlock):
-            # TODO: implement this part:
-            pass
+            instruction.eval(environment, PC)
         else:
-            # TODO: implement this part:
-            pass
+            instruction.eval(environment)
         return interp(instruction.get_next(), environment, instruction.ID)
     else:
         return environment

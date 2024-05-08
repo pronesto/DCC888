@@ -1,4 +1,4 @@
-from lang import Env, Inst, BinOp, Bt
+from lang import Env, Inst, BinOp, Bt, Add, Read, Mul, Lth, Geq
 from abc import ABC, abstractmethod
 
 
@@ -81,242 +81,91 @@ class DataFlowEq(ABC):
         return True if data_flow_env[self.name()] != old_env else False
 
 
-def name_in(ID):
+class SparseDataFlowEq(DataFlowEq):
     """
-    The name of an IN set is always ID + _IN. Eg.:
-        >>> Inst.next_index = 0
-        >>> add = Add('x', 'a', 'b')
-        >>> name_in(add.ID)
-        'IN_0'
+    When dealing with SSA-Form programs a classical data-flow analysis is
+    somewhat cumbersome. Since every variable is associated with a single
+    information during their whole lifetime, the analysis state can be shared
+    across all program points. Thus, each instruction contributes to this state
+    by defining the state of their own involved variable.
+
+    This class inherits attributes from DataFlowEq.
     """
-    return f"IN_{ID}"
 
-class (DataFlowEq):
+    def eval_aux(self, data_flow_env: dict):
+        """
+        This method determines how each concrete equation evaluates itself.
+        Note that now the the reveived state is updated locally.
+        """
+        raise NotImplementedError
+
+    def eval(self, data_flow_env: dict) -> bool:
+        """
+        This method implements the abstract evaluation of a data-flow equation.
+        Notice that the actual semantics of this evaluation will be implemented
+        by the `eval_aux` method, which is abstract.
+        """
+        DataFlowEq.num_evals += 1
+        old_env = data_flow_env.copy()
+        self.eval_aux(data_flow_env)
+        return True if data_flow_env != old_env else False
+
+    def deps(self):
+        return {}
+
+    def name(self):
+        return '' 
 
 
-class SparseConstantPropagation(DataFlowEq):
-    # TODO: update doctest
+class SparseConstantPropagation(SparseDataFlowEq):
     """
     This concrete class implements the sparse analysis for Constant
     Propagation. Since we assume an input program is in SSA Form, 
-    meet operation for reaching-definition
-    analysis. The meet operation produces the IN set of a program point. This
-    IN set is the union of the OUT set of the predecessors of this point.
+    there is no further need for IN and OUT sets for each instruction.
+    Instead, each variable is associated with one state by the end of the
+    Analysis.
     """
 
-    def name(self):
-        return f"{self.instruction.ID}_Eq"
-
-    def eval_aux(self, data_flow_env):
+    def eval_aux(self, data_flow_env: Env):
         """
-        The evaluation of the meet operation over reaching definitions is the
-        union of the OUT sets of the predecessors of the instruction.
+        The evaluation of the meet operation over constant propagation follows
+        the lattice:
+                Not-a-constant (NAC)
+              /   /   /  | \  \  \ 
+            ... -c2 -c1 c0 c1 c2 ... 
+              \   \   \  | /  /  /  
+                Undefined (UNDEF)
+
+        Whereby variables start UNDEF untill value assignment, operations with
+        constants do not move them up the lattice and operations with NACs turn
+        them into NACs as well.
+
+        Each SparseConstantPropagation adds
 
         Example:
             >>> Inst.next_index = 0
-            >>> i0 = Add('x', 'a', 'b')
-            >>> i1 = Add('x', 'c', 'd')
-            >>> i2 = Add('y', 'x', 'x')
-            >>> i0.add_next(i2)
+            >>> i0 = Add('x', 'ZERO', 'ZERO')
+            >>> i1 = Read('y')
+            >>> i2 = Add('z', 'x', 'y')
+            >>> i0.add_next(i1)
             >>> i1.add_next(i2)
-            >>> df = ReachingDefs_IN_Eq(i2)
-            >>> sorted(df.eval_aux({'OUT_0': {('x', 0)}, 'OUT_1': {('x', 1)}}))
-            [('x', 0), ('x', 1)]
+            >>> df = SparseConstantPropagation(i2)
+            >>> env = {'ZERO': 0, 'x': 0, 'y': 'NAC'}
+            >>> df.eval_aux(env)
+            >>> sorted(env.items())
+            [('ZERO', 0), ('x', 0), ('y', 'NAC'), ('z', 'NAC')]
         """
-        solution = set()
-        for inst in self.inst.preds:
-            solution = solution.union(data_flow_env[name_out(inst.ID)])
-        return solution
+        if type(self.inst) is Bt:
+            return
 
-    def deps(self) -> list[str]:
-        """
-        The list of dependencies of this equation. Ex.:
-            >>> Inst.next_index = 0
-            >>> i0 = Add('x', 'a', 'b')
-            >>> i1 = Add('x', 'c', 'd')
-            >>> i2 = Add('y', 'x', 'x')
-            >>> i0.add_next(i2)
-            >>> i1.add_next(i2)
-            >>> df = ReachingDefs_IN_Eq(i2)
-            >>> sorted(df.deps())
-            ['OUT_0', 'OUT_1']
-        """
-        # TODO: Implement this method
-        return [name_out(inst.ID) for inst in self.inst.preds]
-
-    def __str__(self):
-        """
-        The name of an IN set is always ID + _IN.
-
-        Example:
-            >>> Inst.next_index = 0
-            >>> i0 = Add('x', 'a', 'b')
-            >>> i1 = Add('x', 'c', 'd')
-            >>> i2 = Add('y', 'x', 'x')
-            >>> i0.add_next(i2)
-            >>> i1.add_next(i2)
-            >>> df = ReachingDefs_IN_Eq(i2)
-            >>> str(df)
-            'IN_2: Union( OUT_0, OUT_1 )'
-        """
-        succs = ", ".join([name_out(pred.ID) for pred in self.inst.preds])
-        return f"{self.name()}: Union( {succs} )"
+        # TODO: update data_flow_env in-place here
 
 
-class IN_Eq(DataFlowEq):
-    """
-    This abstract class represents all the equations that affect the IN set
-    related to some program point.
-    """
-
-    def name(self):
-        return name_in(self.inst.ID)
+def constant_prop_constraint_gen(instructions: list[Inst]):
+    return [SparseConstantPropagation(i) for i in instructions]
 
 
-def name_out(ID):
-    """
-    The name of an OUT set is always ID + _OUT. Eg.:
-        >>> Inst.next_index = 0
-        >>> add = Add('x', 'a', 'b')
-        >>> name_out(add.ID)
-        'OUT_0'
-    """
-    return f"OUT_{ID}"
-
-
-class OUT_Eq(DataFlowEq):
-    """
-    This abstract class represents all the equations that affect the OUT set
-    related to some program point.
-    """
-
-    def name(self):
-        return name_out(self.inst.ID)
-
-
-class ReachingDefs_Bin_OUT_Eq(OUT_Eq):
-    """
-    This concrete class implements the equations that affect OUT facts of the
-    reaching-definitions analysis for binary instructions. These instructions
-    have three fields: dst, src0 and src1; however, only the former is of
-    interest for these equations.
-    """
-
-    def eval_aux(self, data_flow_env):
-        """
-        Evaluates this equation, where:
-        OUT[p] = (v, p) + (IN[p] - (v, _))
-
-        Example:
-            >>> Inst.next_index = 0
-            >>> i0 = Add('x', 'a', 'b')
-            >>> df = ReachingDefs_Bin_OUT_Eq(i0)
-            >>> sorted(df.eval_aux({'IN_0': {('x', 1), ('y', 2)}}))
-            [('x', 0), ('y', 2)]
-        """
-        in_set = data_flow_env[name_in(self.inst.ID)]
-        new_set = {(v, p) for (v, p) in in_set if v != self.inst.dst}
-        return new_set.union([(self.inst.dst, self.inst.ID)])
-
-    def deps(self):
-        """
-        The list of dependencies of this equation. Ex.:
-            >>> Inst.next_index = 0
-            >>> add = Add('x', 'a', 'b')
-            >>> df = ReachingDefs_Bin_OUT_Eq(add)
-            >>> df.deps()
-            ['IN_0']
-        """
-        return [name_in(self.inst.ID)]
-
-    def __str__(self):
-        """
-        A string representation of a reaching-defs equation representing
-        a binary instruction. Eg.:
-            >>> Inst.next_index = 0
-            >>> add = Add('x', 'a', 'b')
-            >>> df = ReachingDefs_Bin_OUT_Eq(add)
-            >>> str(df)
-            'OUT_0: (x, 0) + (IN_0 - (x, _))'
-        """
-        kill_set = f" + ({name_in(self.inst.ID)} - ({self.inst.dst}, _))"
-        gen_set = f"({self.inst.dst}, {self.inst.ID})"
-        return f"{self.name()}: {gen_set}{kill_set}"
-
-
-class ReachingDefs_Bt_OUT_Eq(OUT_Eq):
-    """
-    This concrete class implements the equations that affect OUT facts of the
-    reaching-definitions analysis for branch instructions. These instructions
-    do not affect reaching definitions at all. Therefore, their equations are
-    mostly treated as identity functions.
-    """
-
-    def eval_aux(self, data_flow_env):
-        """
-        Evaluates this equation. Notice that the reaching definition equation
-        for a branch instruction is simply the identity function.
-        OUT[p] = IN[p]
-
-        Example:
-            >>> Inst.next_index = 0
-            >>> i0 = Bt('x')
-            >>> df = ReachingDefs_Bt_OUT_Eq(i0)
-            >>> sorted(df.eval_aux({'IN_0': {('x', 1), ('y', 2)}}))
-            [('x', 1), ('y', 2)]
-        """
-        return data_flow_env[name_in(self.inst.ID)]
-
-    def deps(self):
-        """
-        The list of dependencies of this equation. Ex.:
-            >>> Inst.next_index = 0
-            >>> i = Bt('x')
-            >>> df = ReachingDefs_Bt_OUT_Eq(i)
-            >>> df.deps()
-            ['IN_0']
-        """
-        return [name_in(self.inst.ID)]
-
-    def __str__(self):
-        """
-        A string representation of a reaching-defs equation representing a
-        branch. Eg.:
-            >>> Inst.next_index = 0
-            >>> i = Bt('x')
-            >>> df = ReachingDefs_Bt_OUT_Eq(i)
-            >>> str(df)
-            'OUT_0: IN_0'
-        """
-        kill_set = f"{name_in(self.inst.ID)}"
-        gen_set = f""
-        return f"{self.name()}: {gen_set}{kill_set}"
-
-
-def reaching_defs_constraint_gen(insts):
-    """
-    Builds a list of equations to solve Reaching-Definition Analysis for the
-    given set of instructions.
-
-    Example:
-        >>> Inst.next_index = 0
-        >>> i0 = Add('c', 'a', 'b')
-        >>> i1 = Mul('d', 'c', 'a')
-        >>> i2 = Lth('e', 'c', 'd')
-        >>> i0.add_next(i2)
-        >>> i1.add_next(i2)
-        >>> insts = [i0, i1, i2]
-        >>> sol = [str(eq) for eq in reaching_defs_constraint_gen(insts)]
-        >>> sol[0] + " " + sol[-1]
-        'OUT_0: (c, 0) + (IN_0 - (c, _)) IN_2: Union( OUT_0, OUT_1 )'
-    """
-    in0 = [ReachingDefs_Bin_OUT_Eq(i) for i in insts if isinstance(i, BinOp)]
-    in1 = [ReachingDefs_Bt_OUT_Eq(i) for i in insts if isinstance(i, Bt)]
-    out = [ReachingDefs_IN_Eq(i) for i in insts]
-    return in0 + in1 + out
-
-
-def abstract_interp(equations):
+def abstract_interp(equations, program_env: Env):
     """
     This function iterates on the equations, solving them in the order in which
     they appear. It returns an environment with the solution to the data-flow
@@ -324,92 +173,28 @@ def abstract_interp(equations):
 
     Example for reaching-definition analysis:
         >>> Inst.next_index = 0
-        >>> i0 = Add('c', 'a', 'b')
-        >>> i1 = Mul('d', 'c', 'a')
+        >>> env = Env({'zero': 0, 'one': 1})
+        >>> i0 = Add('a0', 'one', 'zero')
+        >>> i1 = Read('b0')
+        >>> i2 = Mul('c0', 'a0', 'b0')
+        >>> i3 = Add('a1', 'a0', 'a0')
+        >>> i4 = Add('a2', 'a1', 'c0')
         >>> i0.add_next(i1)
-        >>> eqs = reaching_defs_constraint_gen([i0, i1])
-        >>> (sol, num_evals) = abstract_interp(eqs)
-        >>> f"OUT_0: {sorted(sol['OUT_0'])}, Num Evals: {num_evals}"
-        "OUT_0: [('c', 0)], Num Evals: 12"
+        >>> i1.add_next(i2)
+        >>> i2.add_next(i3)
+        >>> i3.add_next(i4)
+        >>> eqs = constant_prop_constraint_gen([i0, i1, i2, i3, i4])
+        >>> (sol, num_evals) = abstract_interp(eqs, env)
+        >>> sorted(sol.items())
+        [('a0', 1), ('a1', 2), ('a2', 'NAC'), ('b0', 'NAC'), ('c0', 'NAC'), ('one', 1), ('zero', 0)]
+
     """
     from functools import reduce
 
+    
+
     DataFlowEq.num_evals = 0
-    env = {eq.name(): set() for eq in equations}
     changed = True
     while changed:
-        changed = reduce(lambda acc, eq: eq.eval(env) or acc, equations, False)
-    return (env, DataFlowEq.num_evals)
-
-
-def build_dependence_graph(equations) -> dict[str, list[DataFlowEq]]:
-    """
-    This function builds the dependence graph of equations.
-
-    Example:
-        >>> Inst.next_index = 0
-        >>> i0 = Add('c', 'a', 'b')
-        >>> i1 = Mul('d', 'c', 'a')
-        >>> i0.add_next(i1)
-        >>> eqs = reaching_defs_constraint_gen([i0, i1])
-        >>> deps = build_dependence_graph(eqs)
-        >>> [eq.name() for eq in deps['IN_1']]
-        ['OUT_0']
-    """
-    # I have changed the doctest, since the reaching definition of the first IN
-    # set should be empty
-    # TODO: implement this method
-    eq_map = {eq.name(): eq for eq in equations}
-    dep_graph = {
-        eq.name(): [eq_map[dep] for dep in eq.deps()]
-        for eq in equations
-    }
-    return dep_graph
-
-
-def abstract_interp_worklist(equations) -> tuple[Env, int]:
-    """
-    This function solves the system of equations using a worklist. Once an
-    equation E is evaluated, and the evaluation changes the environment, only
-    the dependencies of E are pushed onto the worklist.
-
-    Example for reaching-definition analysis:
-        >>> Inst.next_index = 0
-        >>> i0 = Add('c', 'a', 'b')
-        >>> i1 = Mul('d', 'c', 'a')
-        >>> i0.add_next(i1)
-        >>> eqs = reaching_defs_constraint_gen([i0, i1])
-        >>> (sol, num_evals) = abstract_interp_worklist(eqs)
-        >>> f"OUT_0: {sorted(sol['OUT_0'])}"
-        "OUT_0: [('c', 0)]"
-    """
-#        >>> f"OUT_0: {sorted(sol['OUT_0'])}, Num Evals: {num_evals}"
-#        "OUT_0: [('c', 0)], Num Evals: 6"
-    # TODO: implement this method
-    from collections import defaultdict
-
-    DataFlowEq.num_evals = 0
-    env = defaultdict(list)
-    dep_graph = build_dependence_graph(equations)
-    worklist = equations.copy()
-    # id_to_eq = {eq.name(): eq for eq in equations}
-
-    def affects(eq_name):
-        affected = []
-        for i in dep_graph.items():
-            if eq_name in i[1]:
-                affected.append(i[0])
-        return affected
-
-    while len(worklist) != 0:
-        eq = worklist.pop(0)
-        if eq.eval(env):
-            for dep in affects(eq.name()):
-                # if id_to_eq[dep] in worklist:
-                if dep in worklist:
-                    # worklist.remove(id_to_eq[dep])
-                    worklist.remove(dep)
-                # worklist.insert(0, id_to_eq[dep])
-                worklist.insert(0, dep)
-
+        changed = reduce(lambda acc, eq: eq.eval(program_env) or acc, equations, False)
     return (env, DataFlowEq.num_evals)
