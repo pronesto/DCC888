@@ -1,4 +1,0 @@
-{"a": 0, "b": 3}
-x = add a b
-y = add x b
-z = mul a c
