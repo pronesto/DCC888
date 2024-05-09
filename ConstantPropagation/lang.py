@@ -77,9 +77,6 @@ class Env:
             4
         """
         # TODO: Implement this method
-        for (var, value) in self.env:
-            if var in vars:
-                return value
         return 0
 
     def set(s, var, value):
@@ -301,10 +298,6 @@ class PhiBlock(Inst):
         self.phis = phis
         # TODO: implement the rest of this method
         # here...
-        self.selectors = {
-            selector_IDs[i]: i
-            for i in range(len(selector_IDs))
-        }
         #########################################
         super().__init__()
 
@@ -339,14 +332,8 @@ class PhiBlock(Inst):
 
     def eval(self, env: Env, PC: int):
         # TODO: Read all the definitions
-        defs = dict()
-        for phi in self.phis:
-            d = phi.definition()
-            defs[d] = env.get(phi.uses()[self.selectors[PC]])
         # TODO: Assign all the uses:
-        for phi in self.phis:
-            d = phi.definition()
-            env.set(d, defs[d])
+        pass
 
     def __str__(self):
         block_str = "\n".join([str(phi) for phi in self.phis])
