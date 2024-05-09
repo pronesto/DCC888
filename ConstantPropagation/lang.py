@@ -76,6 +76,7 @@ class Env:
             >>> e.get_from_list(["b", "a"])
             4
         """
+        # TODO: Implement this method
         return 0
 
     def set(s, var, value):
@@ -170,16 +171,16 @@ class Phi(Inst):
         1
     """
 
-    def __init__(s, dst, args):
+    def __init__(s, dst, *args):
         s.dst = dst
         s.args = args
         super().__init__()
 
     def definition(s):
-        return {s.dst}
+        return set([s.dst])
 
     def uses(s):
-        return s.args
+        return set(s.args)
 
     def eval(s, env):
         """
@@ -241,6 +242,7 @@ class Read(Inst):
         next_s = f"\n  N: {self.nexts[0].ID if len(self.nexts) > 0 else ''}"
         return inst_s + pred_s + next_s
 
+
 class PhiBlock(Inst):
     """
     PhiBlocks implement a correct semantics for groups of phi-functions. A
@@ -296,7 +298,6 @@ class PhiBlock(Inst):
         self.phis = phis
         # TODO: implement the rest of this method
         # here...
-        # self.selectors = ...
         #########################################
         super().__init__()
 
@@ -312,7 +313,7 @@ class PhiBlock(Inst):
             >>> sorted(aa.definition())
             ['a0', 'a1']
         """
-        return set([phi.definition() for phi in self.phis])
+        return [phi.definition() for phi in self.phis]
 
     def uses(self):
         """
@@ -337,7 +338,6 @@ class PhiBlock(Inst):
     def __str__(self):
         block_str = "\n".join([str(phi) for phi in self.phis])
         return f"PHI_BLOCK [\n{block_str}\n]"
-
 
 class BinOp(Inst):
     """
