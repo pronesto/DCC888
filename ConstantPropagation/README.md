@@ -11,7 +11,8 @@ One classical example of Sparse Analysis applicability is *constant propagation*
 
 In this lab we shall implement a sparse data-flow analysis for constant propagation.
 Similarly to previous labs, a [parser implementation](../Parsing) is required.
-Thus, as a preliminary step, rename your parser, from that lab, from `todo.py` to `parser.py`.
+Additionally, [phi functions](../PhiFunctions) are also required.
+Thus, as a preliminary step, rename your parser, from that lab, from `todo.py` to `parser.py`. Next, copy the respective PhiFunction's `lang.py` into this lab.
 The parser is the only file from the previous lab that you should reuse.
 
 This lab requires implementing the `SparseConstantPropagation`'s `eval_aux` function. This function will hold all rules for this analysis.

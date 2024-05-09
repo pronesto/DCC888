@@ -165,16 +165,16 @@ class Phi(Inst):
         1
     """
 
-    def __init__(s, dst, args):
+    def __init__(s, dst, *args):
         s.dst = dst
         s.args = args
         super().__init__()
 
     def definition(s):
-        return s.dst
+        return set([s.dst])
 
     def uses(s):
-        return s.args
+        return set(s.args)
 
     def eval(s, env):
         """
