@@ -10,4 +10,4 @@ if __name__ == "__main__":
     env, program = parser.file2cfg_and_env(lines)
     equations = dataflow.constant_prop_constraint_gen(program)
     result_env, _ = dataflow.abstract_interp(equations, env)
-    result_env.dump()
+    print(result_env.to_dict())
