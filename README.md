@@ -57,6 +57,9 @@ In this [lab](/Dominance), the student will implement a data-flow analysis to co
 
 In this [lab](/PhiFunctions), the student will add phi-functions to our toy three-address code language, so that we can write programs in [Static Single-Assignment Form](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/StaticSingleAssignment.pdf).
 
+### Constant Propagation
+
+In this [lab](/ConstantPropagation), the student will implement the sparse data-flow equations for [constant propagation](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/SparseAbstractInterpretation.pdf), which will be used reduce the number of instructions in a program.
 
 ### Alias Analysis
 
