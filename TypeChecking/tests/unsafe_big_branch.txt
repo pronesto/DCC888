@@ -1,0 +1,23 @@
+{"zero": 0, "one": 1, "two": 2, "three": 3, "mintwo": -2}
+sub = add three mintwo
+pred = lth sub one
+bt pred 11
+prod0 = add zero one
+count0 = add zero one
+prod1 = phi prod0 prod2
+count1 = phi count0 count2
+prod2 = mul prod1 two
+count2 = add count1 one
+repeat0 = geq three count2
+bt repeat0 5
+bt one 19
+fib0 = add zero one
+count3 = add zero one
+count4 = phi count3 count5
+fib1 = phi fib0 fib2
+nextfib = add fib1 one
+fib2 = add fib1 nextfib
+count5 = add count4 one
+repeat1 = geq three count5
+bt repeat1 13
+end = add zero zero
