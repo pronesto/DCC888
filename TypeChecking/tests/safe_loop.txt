@@ -1,0 +1,10 @@
+{"zero": 0, "one": 1, "five": 5}
+count0 = add zero one
+sum0 = add zero zero
+count1 = phi count0 count2
+sum1 = phi sum0 sum2
+sum2 = add sum1 one
+count2 = add count1 one
+repeat = geq five count2
+bt repeat 2
+end = add zero zero

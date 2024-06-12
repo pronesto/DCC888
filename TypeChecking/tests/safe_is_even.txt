@@ -1,0 +1,11 @@
+{"one": 1, "two": 2, "minone": -1}
+num0 = rdn
+mintwo = mul minone two
+num1 = phi num0 num2
+l = lth num1 two
+bt l 7
+num2 = add num1 mintwo
+bt one 2
+isone = geq num1 one
+nisone = mul minone isone
+iseven = add one nisone
