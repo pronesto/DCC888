@@ -83,7 +83,7 @@ class Env:
             4
         """
         # TODO: Implement this method
-        pass
+        raise NotImplementedError
 
     def set(s, var, value):
         """
@@ -276,7 +276,7 @@ class Phi(Inst):
             Expected: LangType.NUM, found: LangType.BOOL
         """
         # TODO: implement this method
-        pass
+        raise NotImplementedError
 
     def __str__(self):
         use_list = ", ".join(self.uses())
@@ -446,7 +446,7 @@ class PhiBlock(Inst):
     def eval(self, env: Env, PC: int):
         # TODO: Read all the definitions
         # TODO: Assign all the uses:
-        pass
+        raise NotImplementedError
 
     def type_eval(s, type_env):
         """
@@ -466,7 +466,7 @@ class PhiBlock(Inst):
             Expected: LangType.NUM, found: LangType.BOOL
         """
         # TODO: implement this method
-        pass
+        raise NotImplementedError
 
     def __str__(self):
         block_str = "\n".join([str(phi) for phi in self.phis])
@@ -541,7 +541,7 @@ class Add(BinOp):
             LangType.NUM
         """
         # TODO: implement this method
-        pass
+        raise NotImplementedError
 
     def get_opcode(self):
         return "+"
@@ -776,4 +776,4 @@ def interp(instruction: Inst, environment: Env, PC=0):
 
 def type_check(instruction: Inst, type_env: TypeEnv, phi_queue: list[Inst] = []):
     # TODO: implement type checking
-    pass
+    raise NotImplementedError
