@@ -112,7 +112,6 @@ class TypeEnvErr(Exception):
 
 
 class TypeEnv(Env):
-
     @classmethod
     def from_env(cls, env: Env):
         d = env.to_dict()
@@ -181,8 +180,10 @@ class InstTypeErr(Exception):
         s.inst = inst
         s.expected = expected
         s.found = found
-        message = f'Type error in instruction {inst.ID}\n' \
-                  f'Expected: {expected}, found: {found}'
+        message = (
+            f"Type error in instruction {inst.ID}\n"
+            f"Expected: {expected}, found: {found}"
+        )
         super().__init__(message)
 
 
@@ -290,6 +291,7 @@ class ReadNum(Inst):
     The ReadNum instruction introduces non-constant values to the program.
     This blocking instruction requests a numerical input from the user.
     """
+
     def __init__(s, dst):
         s.dst = dst
         super().__init__()
@@ -304,7 +306,7 @@ class ReadNum(Inst):
         """
         For simplicity, ReadNum fails with any value other than ints
         """
-        input_value = input(f'value for {s.dst}: ')
+        input_value = input(f"value for {s.dst}: ")
         if type(input_value) is not int:
             raise InstTypeErr(s, int, type(input_value))
         env.set(s.dst, int(input_value))
@@ -324,6 +326,7 @@ class ReadBool(Inst):
     The ReadNum instruction introduces non-constant values to the program.
     This blocking instruction requests a numerical input from the user.
     """
+
     def __init__(s, dst):
         s.dst = dst
         super().__init__()
@@ -338,7 +341,7 @@ class ReadBool(Inst):
         """
         For simplicity, ReadBool fails with any value other than bool
         """
-        input_value = input(f'value for {s.dst}: ')
+        input_value = input(f"value for {s.dst}: ")
         if type(input_value) is not bool:
             raise InstTypeErr(s, bool, type(input_value))
         env.set(s.dst, int(input_value))
@@ -771,8 +774,6 @@ def interp(instruction: Inst, environment: Env, PC=0):
         return environment
 
 
-def type_check(instruction: Inst,
-               type_env: TypeEnv,
-               phi_queue: list[Inst] = []):
+def type_check(instruction: Inst, type_env: TypeEnv, phi_queue: list[Inst] = []):
     # TODO: implement type checking
     pass

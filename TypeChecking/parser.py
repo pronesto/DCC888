@@ -67,13 +67,13 @@ def file2cfg_and_env(lines: list[str]) -> tuple[Env, list[Inst]]:
     """
 
     match_op = {
-        "add":  Add,
-        "mul":  Mul,
-        "lth":  Lth,
-        "geq":  Geq,
-        "rdn":   ReadNum,
-        "rdb":   ReadBool,
-        "phi":  Phi,
+        "add": Add,
+        "mul": Mul,
+        "lth": Lth,
+        "geq": Geq,
+        "rdn": ReadNum,
+        "rdb": ReadBool,
+        "phi": Phi,
     }
 
     env = line2env(lines[0])
@@ -94,6 +94,6 @@ def file2cfg_and_env(lines: list[str]) -> tuple[Env, list[Inst]]:
         bt = bt_tuple[0]
         bt.add_true_next(insts[int(bt_tuple[1])])
 
-    for i in range(len(insts)-1):
-        insts[i].add_next(insts[i+1])
+    for i in range(len(insts) - 1):
+        insts[i].add_next(insts[i + 1])
     return (env, insts)
