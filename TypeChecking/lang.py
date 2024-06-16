@@ -450,8 +450,8 @@ class PhiBlock(Inst):
 
     def type_eval(s, type_env):
         """
-        For type checking, it is sufficient to assure that all Phi arguments
-        belong to the same type.
+        To type check a block of phi-functions, just type check each phi
+        function individually.
 
         Example:
             >>> Inst.next_index = 0
@@ -465,8 +465,8 @@ class PhiBlock(Inst):
             lang.InstTypeErr: Type error in instruction 0
             Expected: LangType.NUM, found: LangType.BOOL
         """
-        # TODO: implement this method
-        raise NotImplementedError
+        for phi in s.phis:
+            phi.type_eval(type_env)
 
     def __str__(self):
         block_str = "\n".join([str(phi) for phi in self.phis])
