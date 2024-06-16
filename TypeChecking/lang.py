@@ -451,7 +451,8 @@ class PhiBlock(Inst):
     def type_eval(s, type_env):
         """
         To type check a block of phi-functions, just type check each phi
-        function individually.
+        function individually. Notice that the phi-functions within a phi
+        block don't need to have the same types.
 
         Example:
             >>> Inst.next_index = 0
@@ -464,6 +465,13 @@ class PhiBlock(Inst):
              ...
             lang.InstTypeErr: Type error in instruction 0
             Expected: LangType.NUM, found: LangType.BOOL
+
+            >>> Inst.next_index = 0
+            >>> a = Phi("a0", "a1", "a2")
+            >>> b = Phi("b0", "b1", "b2")
+            >>> aa = PhiBlock([a, b], [10, 31])
+            >>> e = TypeEnv({"a1": LangType.NUM, "b1": LangType.BOOL})
+            >>> aa.type_eval(e)
         """
         for phi in s.phis:
             phi.type_eval(type_env)
@@ -774,6 +782,22 @@ def interp(instruction: Inst, environment: Env, PC=0):
         return environment
 
 
-def type_check(instruction: Inst, type_env: TypeEnv, phi_queue: list[Inst] = []):
-    # TODO: implement type checking
-    raise NotImplementedError
+def type_check(inst: Inst, tp_env: TypeEnv, phi_queue: list[Inst] = []):
+    """
+    This function runs a simple type checking engine on the program that is
+    headed by instruction `inst`. Types are stored in the type environment
+    `tp_env`. The function type checks the program in two phases. Normal
+    instructions are checked right away. Phi-functions are checked into two
+    moments. They are checked once, the first time they are met, in order to
+    determine their types. Then, afterwards, they are checked again, to ensure
+    that all the parameters have the same type. To perform this two-phase
+    approach, this function uses a queue of phi-functions.
+    """
+    if inst:
+        if isinstance(inst, PhiBlock) or isinstance(inst, Phi):
+            phi_queue.append(inst)
+        inst.type_eval(tp_env)
+        type_check(inst.get_next(), tp_env)
+    else:
+        for phi in phi_queue:
+            phi.type_eval(tp_env)
