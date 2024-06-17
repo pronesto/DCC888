@@ -24,9 +24,9 @@ In order to implement the type-checker, all `type_eval` methods must be implemen
 If an instruction fails to type check, then an `InstTypeErr` exception must be raised.
 Type checking happens at the `type_check` function, which is already implemented for you.
 This function iterates over the list of instructions and, by using `type_eval`, verifies if the whole program is sound.
+The implementation of `type_eval` follows the type checking rules in Figure 1.
 
-The model language's type rules can be formalized as:
-![Model Language Type Rules](../assets/images/typerules.png)
+![Type checking rules](../assets/images/type_checking.png)
 
 ## Uploading the Assignment
 
