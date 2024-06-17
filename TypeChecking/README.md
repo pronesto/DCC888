@@ -49,3 +49,17 @@ To simulate automatic grading, you can run [drive.py](driver.py) directly, e.g.:
 ```
 python3 driver.py < tests/fib.txt
 ```
+
+## Theoretical Questions
+
+1. The implementation of `type_check` evaluates all the instructions once, except phi-functions.
+On a strict-SSA form program, if we evaluate instructions on the order defined by the program's dominator tree, then we are guaranteed to have evaluated all the uses of an instruction *I* upon having to evaluate *I*.
+The only exception for this property are the phi-functions.
+
+2. Figure 2.g shows an image of the heap, produced with a solution of the alias analysis. Each dashed line from `a` to `b` indicates that the pointer `a` can reference the memory location `b`. If such an edge exists, then is it the case that necessarily the address of `b` will ever be the value of `a`?
+
+3. Let's take a look into the complement of Question 2 above: if the solution of the alias analysis does not determine a dashed edge from `a` to `b`, does it mean that there is no way, ever, that during the execution of the program, variable `a` can point to variable `b`?
+
+4. The constraints such as `Alias(a) >= Alias(b)`, which are either created by `Move` instructions, or as a result of the evaluation of the complex constraints, determine a graph. Figures 2.c, 2.e and 2.f show instances of this points-to graph. A efficient way to solve a constraint system is to collapse cycles in this graph, unifying the points-to information of all the nodes in the strong component that was merged.
+See Section 2 of the [Wave Propagation Paper](https://homepages.dcc.ufmg.br/~fernando/publications/papers/CGO09.pdf) for more details.
+Why is it correct to merge nodes involved in a cycle?
