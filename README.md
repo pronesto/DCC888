@@ -59,7 +59,8 @@ In this [lab](/PhiFunctions), the student will add phi-functions to our toy thre
 
 ### Constant Propagation
 
-In this [lab](/ConstantPropagation), the student will implement the sparse data-flow equations for [constant propagation](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/SparseAbstractInterpretation.pdf), which will be used reduce the number of instructions in a program.
+In this [lab](/ConstantPropagation), the student will implement the sparse data-flow equations for [constant propagation](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/SparseAbstractInterpretation.pdf).
+The student will use the results of this analysis to remove some instructions (those whose value can be computed at compilation time) from the program.
 
 ### Alias Analysis
 
