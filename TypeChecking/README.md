@@ -5,6 +5,13 @@ If a language's syntax supports Type rules, the program can be type-checked to a
 - *Progress* implies that no instruction gets stuck: they can always be evaluated.
 - *Preservation* implies that the program always progresses from a type-safe state to a type-safe state.
 
+In this assignment, you shall implement a simple type check engine.
+If a program passes type checking, then this program is guaranteed to run without reaching a stuck state.
+Mind it that you will be implementing type checking, not [type inference](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/TypeInference.pdf).
+Type checking and type inference are two important concepts in programming languages, particularly in the context of statically typed languages.
+Type checking is the process of verifying and enforcing the constraints of types—ensuring that the operations in a program are being performed on data types that are allowed for those operations.
+Type inference is the process by which a compiler automatically deduces the types of expressions without explicit type annotations provided by the programmer.
+
 ## Pre-Requisites
 
 In order to pass every test in this assignment you are expected to have solved the [Phi-Function](../PhiFunctions/) lab and the [Parsing](../Parsing) lab.
@@ -66,6 +73,6 @@ Can you demonstrate that the above statement is true?
 4. Use the statement from Question 2 to demonstrate that once you call `type_eval` on an instruction *I* that is a phi-function, then you will be able to either find a well-defined type for *I*, or raise a type error.
 
 5. Our type checking analysis associates each variable name with a single type.
-Provide an argument demonstrating that for our toy language, the static single-assignment form is enough to ensure that this property -- single type per name -- holds.
+Provide an argument demonstrating that for our toy language, the [static single-assignment](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/StaticSingleAssignment.pdf) form is enough to ensure that this property -- single type per name -- holds.
 
 6. Show an example of a program where you could get multiple types associated with the same name, were you not in the SSA format.
