@@ -88,6 +88,9 @@ for phi in phi_queue:
 ```
 On this second phase, `type_eval` is guaranteed to only find a type environment
 that associates a type with every variable name.
+In other words, when we invoke `type_eval` upon a phi function, we know, for 
+sure, that every argument of that phi function will have a type in the type
+environment `tp_env` (it cannot be undefined).
 Prove that the above statement is true.
 
 6. Our type checking analysis associates each variable name with a single type.
