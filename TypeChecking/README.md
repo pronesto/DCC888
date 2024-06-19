@@ -72,7 +72,31 @@ Can you demonstrate that the above statement is true?
 
 4. Use the statement from Question 2 to demonstrate that once you call `type_eval` on an instruction *I* that is a phi-function, then you will be able to either find a well-defined type for *I*, or raise a type error.
 
-5. Our type checking analysis associates each variable name with a single type.
+5. The `type_eval` function works in two steps: first, it evaluates all the
+instructions in the list of instructions that form the program, e.g.:
+```
+if isinstance(inst, PhiBlock) or isinstance(inst, Phi):
+  phi_queue.append(inst)
+inst.type_eval(tp_env)
+type_check(inst.get_next(), tp_env)
+```
+In a second phase, it evaluates all the phi-functions stored in the queue of
+pending instructions, e.g.:
+```
+for phi in phi_queue:
+  phi.type_eval(tp_env)
+```
+On this second phase, `type_eval` is guaranteed to only find a type environment
+that associates a type with every variable name.
+Prove that the above statement is true.
+
+6. Our type checking analysis associates each variable name with a single type.
 Provide an argument demonstrating that for our toy language, the [static single-assignment](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/StaticSingleAssignment.pdf) form is enough to ensure that this property -- single type per name -- holds.
 
-6. Show an example of a program where you could get multiple types associated with the same name, were you not in the SSA format.
+7. Show an example of a program where you could get multiple types associated with the same name, were you not in the SSA format.
+
+8. We are doing type checking, not type inference. Thus, a initial collection of
+variables must be annotated with types, or else types must be inferred somehow.
+For instance, in C, the programmer annotates variables with types such as
+`int`, `double` or `struct Person`, for instance.
+What is the syntactic constructs that add type annotations to our toy language?
