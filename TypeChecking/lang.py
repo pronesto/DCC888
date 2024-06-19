@@ -5,11 +5,11 @@ instruction, plus an environment, which is a stack of bindings. Bindings are
 pairs of variable names and values. New bindings are added to the stack
 whenever new variables are defined. Bindings are never removed from the stack.
 In this way, we can inspect the history of state transformations caused by the
-interpretation of a program. The difference between this file and the files of
-same name in the previous lab is the presence of phi-functions. In other words,
-this new language contains two extra instructions: phi-functions and phi-blocks.
-The latter represents the set of phi-functions that exist at the beginning of
-a basic block.
+interpretation of a program.
+
+In contrast to the other files of same name in previous labs, this file contains
+special code to implement a simple type-checking enginee. You must fill up the
+missing parts of this type checking engine.
 
 This file uses doctests all over. To test it, just run python 3 as follows:
 "python3 -m doctest main.py". The program uses syntax that is excluive of
@@ -587,7 +587,7 @@ class Mul(BinOp):
             LangType.NUM
         """
         # TODO: implement this method
-        pass
+        raise NotImplementedError
 
     def get_opcode(self):
         return "*"
@@ -625,7 +625,7 @@ class Lth(BinOp):
             LangType.BOOL
         """
         # TODO: implement this method
-        pass
+        raise NotImplementedError
 
     def get_opcode(self):
         return "<"
@@ -663,7 +663,7 @@ class Geq(BinOp):
             LangType.BOOL
         """
         # TODO: implement this method
-        pass
+        raise NotImplementedError
 
     def get_opcode(self):
         return ">="
@@ -736,7 +736,7 @@ class Bt(Inst):
             Expected: LangType.BOOL, found: LangType.NUM
         """
         # TODO: implement this method
-        pass
+        raise NotImplementedError
 
     def get_next(s):
         return s.nexts[s.next_iter]
