@@ -69,3 +69,7 @@ In this [lab](/AliasAnalysis), the student will implement a version of Andersen-
 ### Type Checking
 
 In this [lab](/TypeChecking), the student will implement Type-Checking to verify if programs are **Safe**, as seen in [class](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/TypeSystems.pdf)
+
+### Register Allocation by coloring chordal graphs
+
+In this [lab](/SSARegisterAllocation), the student will build and color the interference graph of programs in SSA-form using maximum cardinality search and greedy coloring. The resulting coloring represents the minimum register allocation without spilling, as seen in [SSA-Based Register Allocation](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/SSABasedRA.pdf)
