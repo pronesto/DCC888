@@ -1,0 +1,5 @@
+{"zero": 0, "one": 1, "true": true}
+var = add zero zero
+var = add var one
+bt true 1
+var = add var zero

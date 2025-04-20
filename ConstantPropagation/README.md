@@ -1,34 +1,39 @@
 # Sparse Constant Propagation
-Diffenrently from classical Dataflow Analysis, when dealing with SSA-Form programs we may utilize [sparse analysis](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/SparseAbstractInterpretation.pdf). Since each variable is associated with a single state, the Dataflow result for each given variable depends only on its assigning instruction. Holding a global state for all program variables and updating it through each instruction is enough, and individual *IN* and *OUT* sets are no longer required.
 
-One classical example of Sparse Analysis applicability is *constant propagation*. Each variable throughout the SSA-Form program may be a constant, not-a-constant or undefined.
+[Constant propagation](https://en.wikipedia.org/wiki/Constant_folding) is a static program analysis technique used by compilers to determine whether the value of a variable is constant at each point in the program. If a variable always holds the same constant value during execution, this value can be folded directly into expressions that use the variable. This optimization, known as "constant folding", reduces runtime computations and can enable further optimizations like dead code elimination and strength reduction. Constant propagation typically works by tracking constant values through control flow paths using dataflow analysis.
 
-- before assignment, all variables are undefined.
-- constant variables are the result of operations with other constants
-- not-a-constant (NAC) variables are the result of user input or operations including at least one NAC.
+The goal of this assignment is to implement a [sparse](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/SparseAbstractInterpretation.pdf) version of constant propagation.
+A sparse analysis associates information (e.g., constant or not) with the name of variables.
+We get sparsity, at least in constant propagation, by running this analysis on [SSA-form programs](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/StaticSingleAssignment.pdf).
+Since each variable is associated with a single abstract state, the sparse analysis does not need to keep track of *IN* and *OUT* sets at each program point!
+
 
 ## The Assignment
 
 In this lab we shall implement a sparse data-flow analysis for constant propagation.
-Similarly to previous labs, a [parser implementation](../Parsing) is required.
-Additionally, [phi functions](../PhiFunctions) are also required.
-Thus, as a preliminary step, rename your parser, from that lab, from `todo.py` to `parser.py`. Next, copy the respective PhiFunction's `lang.py` into this lab.
-The parser is the only file from the previous lab that you should reuse.
+You will work with our [intermediate language](lang.py), which includes phi-functions, plus a new instruction `read`, which simulates program input.
+But, this time, there is no need to interpret (at least concretely) programs in this language.
+To complete this assignment, you will have to:
 
-This lab requires implementing the `SparseConstantPropagation`'s `eval_aux` function. This function will hold all rules for this analysis.
-![Constant Propagation Rules](../assets/images/constantprop.png)
+1. Finish the implementation of [parse.py](parse.py). You can start from our [first lab](../Parsing).
+However, you will have to add to this new implementation the ability to read phi-functions and `read` instructions.
+Figure 1 illustrate the new syntax.
 
-> Observe that `abstract_interp` requires an `Env` parameter. This is due to the fact that this analysis must actually calculate operations among constants. This should be the same environment read from the original program - this is safe, the function operates over a copy of this object.
+![Parsing phi-functions and read instructions](../assets/images/newSyntacticRules.png)
 
-This analysis utilizes a fairly simple lattice:
+2. Finish the implementation of our dataflow analysis.
+The analysis is in [dataflow.py](dataflow.py).
+Most of that file is already implemented.
+Check the `TODO` comments to know where you must insert your interventions.
+Figure 2 shows the abstract semantics of each instruction.
 
 ![Constant Propagation Lattice](../assets/images/constantproplattice.png)
 
-Where every variable starts as "undefined". Observe that "meet" operations move variables sideways or up the lattice. In this exercise, variables will only appear as "undefined" if their operands are absent from the Env.
-
-Since this analysis requires actually computing constant operations, it is useful to remember some features of an `Inst` object:
-- `inst.uses() -> set[str]` returns the names of all variables being used in its operation.
-- `inst.definition() -> set[str]` returns the names of all variables being assigned the operation's result.
+You will have to implement the evaluation of each kind of instruction we have (`add`, `mul`, `lth`, `geq`, `rd`, `bt` and `phi`). Additionally, you will have to define the meet operator of your lattice.
+The lattice of constant propagation is rather simple.
+And yet, even real-world compilers such as LLVM use this lattice.
+For instance, you can check out LLVM's implementation of the meet operation on [ValueLattice](https://llvm.org/doxygen/ValueLattice_8h_source.html).
+LLVM uses SSA-form; hence, meet is invoked on the [implementation of phi-functions](https://github.com/llvm/llvm-project/blob/839f52147c0cdbe7d4590cfdda089f250e5ec119/llvm/lib/Transforms/Utils/SCCPSolver.cpp#L1250C23-L1250C35).
 
 ## Uploading the Assignment
 
@@ -46,15 +51,15 @@ You can easily test your implementation by doing, for instance:
 python3 -m doctest dataflow.py
 ```
 
-As an example, the following program is included in the Doctests:
+## Theoretical Questions
 
-![Example of doctest for dominance relation](../assets/images/constantpropexample.png)
+1. If you process instructions in the order determined by the program's dominator tree, then, whenever you visit a non-phi instruction for the first time, all its operands are guaranteed to be bound to either a constant or to NAC, but not to UNDEF. Can you prove that this statement is true for well-formed programs where variables are always defined before being used?
 
-This lab also provides a [folder](tests) with some test cases.
-To simulate automatic grading, you can run [drive.py](driver.py) directly, e.g.:
+2. If you process instructions in the order determined by the program's dominator tree, then, upon visiting a phi-function, it's possible that some of its arguments are bound to UNDEF. And yet, the algorithm works. Why?
 
-```
-python3 driver.py < tests/fib.txt
-```
+3. If you process instructions in an SSA-form program in the order determined by the program's dominator tree, then, the meet operation only needs to be applied onto the arguments of phi-functions. You don't have to worry about performing meet on any other variable v: it suffices to interpret the instruction that creates v abstractly. Why does the meet operation happen only on phi-functions?
 
-In this exercise, the driver prints the dominance tree of each program.
+4. If the target program is not in SSA-form, then you need to apply the meet operator onto every variable, whenever you evaluate that variable, otherwise you risk non-termination. The abstract semantics would be a bit like the one described in this program below.
+Can you explain why such is the case? Perhaps you can even show an example of a program where abstract interpretation would not terminate.
+
+![Constant Propagation Lattice for Non-SSA Form Program](../assets/images/nonSSAAbstractInterpretation.png)

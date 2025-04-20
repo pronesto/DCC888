@@ -1,0 +1,5 @@
+{"zero": 0}
+v0 = rd
+bt v0 3
+v1 = add zero zero
+v2 = phi v0 v1

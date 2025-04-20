@@ -59,24 +59,9 @@ class Env:
         """
         Finds the first occurrence of any variable 'vr' in the list 'vars' that
         has a binding in the environment, and returns the associated value.
-
-        Example:
-            >>> e = Env()
-            >>> e.set("b", 1)
-            >>> e.set("a", 2)
-            >>> e.set("b", 3)
-            >>> e.get_from_list(["b", "a"])
-            3
-
-            >>> e = Env()
-            >>> e.set("b", 1)
-            >>> e.set("a", 2)
-            >>> e.set("b", 3)
-            >>> e.set("a", 4)
-            >>> e.get_from_list(["b", "a"])
-            4
         """
         # TODO: Implement this method
+        # Notice that this is not necessary for the Constant-Prop lab!
         raise NotImplementedError 
 
     def set(s, var, value):
@@ -146,23 +131,6 @@ class Phi(Inst):
     phi-blocks to implement phi-functions. All the same, you can still write
     programs using phi-functions without using phi-blocks, as long as variables
     that are related by phi-functions do not have overlapping live ranges.
-
-    Example:
-        >>> a = Phi("a", ["b0", "b1", "b2"])
-        >>> e = Env()
-        >>> e.set("b0", 1)
-        >>> e.set("b1", 3)
-        >>> a.eval(e)
-        >>> e.get("a")
-        3
-
-        >>> a = Phi("a", ["b0", "b1"])
-        >>> e = Env()
-        >>> e.set("b1", 3)
-        >>> e.set("b0", 1)
-        >>> a.eval(e)
-        >>> e.get("a")
-        1
     """
 
     def __init__(s, dst, args):
@@ -180,27 +148,7 @@ class Phi(Inst):
         """
         If the program were in Conventional-SSA form, then we could correctly
         implement the semantics of phi-functions simply retrieving the first
-        occurrence of each variable in the list of uses. However, notice what
-        would happen with swaps:
-
-        >>> a0 = Phi("a0", ["a1", "a0"])
-        >>> a1 = Phi("a1", ["a0", "a1"])
-        >>> e = Env()
-        >>> e.set("a0", 1)
-        >>> e.set("a1", 3)
-        >>> a0.eval(e)
-        >>> a1.eval(e)
-        >>> e.get("a0") - e.get("a1")
-        0
-
-        In the example above, we would like to evaluate the two phi-functions in
-        parallel, e.g.: (a0, a1) = (a0:1, a1:3). In this way, after the
-        evaluation, we would like to have a0 == 3 and a1 == 1. However, there is
-        no way we can do it: our phi-functions are evaluated once at a time! The
-        problem is that variables a0 and a1 are defined by different
-        phi-functions, but they have overlapping live ranges. So, this
-        program is not in conventional SSA-form (as per Definition 1 in the
-        paper 'SSA Elimination after Register Allocation' - 2009).
+        occurrence of each variable in the list of uses.
         """
         env.set(s.dst, env.get_from_list(s.uses()))
 
@@ -263,27 +211,6 @@ class PhiBlock(Inst):
     more detailed explanation of this semantics, please, refer to Section 3 of
     the paper 'SSA Elimination after Register Allocation'. In particular, take
     a look into Figure 1 of that paper.
-
-    Example:
-        >>> a0 = Phi("a0", ["a0", "a1"])
-        >>> a1 = Phi("a1", ["a1", "a0"])
-        >>> aa = PhiBlock([a0, a1], [10, 31])
-        >>> e = Env()
-        >>> e.set("a0", 1)
-        >>> e.set("a1", 3)
-        >>> aa.eval(e, 10)
-        >>> e.get("a0") - e.get("a1")
-        -2
-
-        >>> a0 = Phi("a0", ["a0", "a1"])
-        >>> a1 = Phi("a1", ["a1", "a0"])
-        >>> aa = PhiBlock([a0, a1], [10, 31])
-        >>> e = Env()
-        >>> e.set("a0", 1)
-        >>> e.set("a1", 3)
-        >>> aa.eval(e, 31)
-        >>> e.get("a0") - e.get("a1")
-        2
     """
 
     def __init__(self, phis, selector_IDs):
@@ -292,22 +219,10 @@ class PhiBlock(Inst):
         a phi-function, and each phi-function reads from N different parameters.
         Each one of these N columns is associated with a 'selector', which is
         the ID of the instruction that leads to that parallel assignment.
-
-        Examples:
-            >>> a0 = Phi("a0", ["a0", "a1"])
-            >>> a1 = Phi("a1", ["a1", "a0"])
-            >>> aa = PhiBlock([a0, a1], [10, 31])
-            >>> sorted(aa.selectors.items())
-            [(10, 0), (31, 1)]
-
-            >>> a0 = Phi("a0", ["a0", "a1"])
-            >>> a1 = Phi("a1", ["a1", "a0"])
-            >>> aa = PhiBlock([a0, a1], [10, 31])
-            >>> sorted([phi.definition() for phi in aa.phis])
-            ['a0', 'a1']
         """
         self.phis = phis
         # TODO: implement the rest of this method
+        # Notice that this is not necessary for the Constant-Prop lab!
         super().__init__()
 
     def definition(self):
@@ -341,6 +256,7 @@ class PhiBlock(Inst):
 
     def eval(self, env, PC):
         # TODO: Implement this method!
+        # Notice that this is not necessary for the Constant-Prop lab!
         raise NotImplementedError
 
     def __str__(self):

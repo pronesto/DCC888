@@ -1,0 +1,9 @@
+{"zero": 0, "true": 1}
+v0 = rd
+v1 = rd
+p0 = geq v0 v1
+bt p0 6
+max0 = add v1 zero
+bt true 7
+max1 = add v0 zero
+max2 = phi max0 max1

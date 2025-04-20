@@ -1,0 +1,5 @@
+{"zero": 0, "one": 1, "true": true}
+var1 = phi zero var2
+var2 = add var1 one
+bt true 0
+var3 = add var1 zero
