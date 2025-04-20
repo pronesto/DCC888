@@ -6,7 +6,9 @@ The goal of this assignment is to implement a [sparse](https://homepages.dcc.ufm
 A sparse analysis associates information (e.g., constant or not) with the name of variables.
 We get sparsity, at least in constant propagation, by running this analysis on [SSA-form programs](https://homepages.dcc.ufmg.br/~fernando/classes/dcc888/ementa/slides/StaticSingleAssignment.pdf).
 Since each variable is associated with a single abstract state, the sparse analysis does not need to keep track of *IN* and *OUT* sets at each program point!
-
+However, notice that in this exercise you must not assume that the program is in SSA form.
+If such is not the case, your analysis must still terminate.
+But it will be less precise: parts of a variable's live range that would be associated with constants will be marked as not-a-constant when the SSA-form property is missing.
 
 ## The Assignment
 
