@@ -243,7 +243,7 @@ class PhiEq(ConstantPropagationEq):
         raise NotImplementedError
 
 
-def constant_prop_constraint_gen(instructions: list[Inst]):
+def constant_prop_constraint_gen(instructions):
     """
     This function converts a list of instructions to a list of data-flow
     equations.
