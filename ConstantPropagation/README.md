@@ -36,6 +36,11 @@ The lattice of constant propagation is rather simple.
 And yet, even real-world compilers such as LLVM use this lattice.
 For instance, you can check out LLVM's implementation of the meet operation on [ValueLattice](https://llvm.org/doxygen/ValueLattice_8h_source.html).
 LLVM uses SSA-form; hence, meet is invoked on the [implementation of phi-functions](https://github.com/llvm/llvm-project/blob/839f52147c0cdbe7d4590cfdda089f250e5ec119/llvm/lib/Transforms/Utils/SCCPSolver.cpp#L1250C23-L1250C35).
+Your lattice, in this lab, will be one of the following values:
+
+* The constant `c`, where `c` is an object of type `int`.
+* The string `UNDEF`, indicating that a variable has not yet been bound to any abstract state.
+* The string `NAC`, indicating that a variable is not a constant.
 
 ## Uploading the Assignment
 
