@@ -98,10 +98,36 @@ def test_div(m, n):
         >>> test_div(1, 3)
         0
     """
-    # TODO: Implement this method
+    env = Env(
+        {
+            "m": m,
+            "n": n,  # keep original positive n for comparison
+            "neg_n": -n,  # use for subtracting
+            "one": 1,
+            "count": 0,
+            "zero": 0,
+        }
+    )
 
+    # Set answer = count when done
+    done = Add("answer", "count", "zero")
 
-#    return env.get("answer")
+    # m = m - n; count += 1
+    step1 = Add("m", "m", "neg_n")
+    step2 = Add("count", "count", "one")
+    step1.add_next(step2)
+
+    # Condition: m >= n
+    cond = Geq("cond", "m", "n")
+    step2.add_next(cond)
+
+    # Branch: loop if m >= n, else done
+    branch = Bt("cond", step1, done)
+    cond.add_next(branch)
+
+    interp(cond, env)
+
+    return env.get("answer")
 
 
 def test_fact(n):
