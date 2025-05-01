@@ -139,6 +139,24 @@ def test_fact(n):
         6
     """
     # TODO: Implement this method
+    env = Env({"n": n, "one": 1, "count": 1, "i": 1, "zero": 0})
 
+    # Set answer when done
+    done = Add("answer", "i", "zero")
 
-#    return env.get("answer")
+    # i = i * count; count += 1
+    step1 = Mul("i", "i", "count")
+    step2 = Add("count", "count", "one")
+    step1.add_next(step2)
+
+    # Condition
+    cond = Geq("cond", "n", "count")
+    step2.add_next(cond)
+
+    # Branch
+    branch = Bt("cond", step1, done)
+    cond.add_next(branch)
+
+    interp(cond, env)
+
+    return env.get("answer")
