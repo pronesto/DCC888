@@ -79,7 +79,6 @@ def test_min3(x, y, z):
     xyz_min.add_next(bt_xyz)
 
     # connect x and y
-
     x_min.add_next(xyz_min)
     y_min.add_next(xyz_min)
 
