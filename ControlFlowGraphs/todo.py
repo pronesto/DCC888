@@ -61,6 +61,29 @@ def test_min3(x, y, z):
         3
     """
     # TODO: Implement this method
+    env = Env({"x": x, "y": y, "z": z, "zero": 0})
+
+    # Compare x and y
+    x_min = Add("answer", "x", "zero")  # x is min
+    y_min = Add("answer", "y", "zero")  # y is min
+
+    xy_min = Lth("xy_min", "y", "x")  # true if y is min
+    bt_xy = Bt("xy_min", y_min, x_min)  # go to y if it is min
+    xy_min.add_next(bt_xy)
+
+    # comparing xy_min and z
+    z_min = Add("answer", "z", "zero")
+
+    xyz_min = Lth("xyz_min", "z", "answer")  # true if z min
+    bt_xyz = Bt("xyz_min", z_min, None)
+    xyz_min.add_next(bt_xyz)
+
+    # connect x and y
+
+    x_min.add_next(xyz_min)
+    y_min.add_next(xyz_min)
+
+    interp(xy_min, env)
     return env.get("answer")
 
 
@@ -77,7 +100,9 @@ def test_div(m, n):
         0
     """
     # TODO: Implement this method
-    return env.get("answer")
+
+
+#    return env.get("answer")
 
 
 def test_fact(n):
@@ -89,4 +114,6 @@ def test_fact(n):
         6
     """
     # TODO: Implement this method
-    return env.get("answer")
+
+
+#    return env.get("answer")
