@@ -10,7 +10,7 @@ As an example, the program below sums up the numbers a, b and c:
 
     {"a": 1, "b": 3, "c": 5}
     x = add a b
-    l2 = x = add x c
+    x = add x c
 """
 
 from lang import Env, Inst, Add, Mul, Lth, Geq, Read, Phi, Bt, interp

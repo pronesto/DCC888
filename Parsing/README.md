@@ -26,7 +26,7 @@ As an example, the program below sums up the numbers a, b and c:
 ```
 {"a": 1, "b": 3, "c": 5}
 x = add a b
-l2 = x = add x c
+x = add x c
 ```
 
 To solve this lab, you will have to implement the function `file2cfg_and_env`. 
