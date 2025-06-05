@@ -500,9 +500,6 @@ def interp(instruction: Inst, environment: Env, PC=0):
         2
     """
     if instruction:
-        print("----------------------------------------------------------")
-        print(instruction)
-        environment.dump()
         if isinstance(instruction, PhiBlock):
             # TODO: implement this part:
             pass

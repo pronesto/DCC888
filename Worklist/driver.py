@@ -13,7 +13,7 @@ def chaotic_solver(program):
 
 def worklist_solver(program):
     equations = dataflow.reaching_defs_constraint_gen(program)
-    return dataflow.abstract_interp_worklist(equations)
+    return dataflow.abstract_interp(equations)
 
 
 if __name__ == "__main__":

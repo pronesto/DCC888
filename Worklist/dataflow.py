@@ -353,7 +353,7 @@ def build_dependence_graph(equations) -> dict[str, list[DataFlowEq]]:
     return dep_graph
 
 
-def abstract_interp_worklist(equations) -> tuple[Env, int]:
+def abstract_interp(equations) -> tuple[Env, int]:
     """
     This function solves the system of equations using a worklist. Once an
     equation E is evaluated, and the evaluation changes the environment, only
@@ -365,7 +365,7 @@ def abstract_interp_worklist(equations) -> tuple[Env, int]:
         >>> i1 = Mul('d', 'c', 'a')
         >>> i0.add_next(i1)
         >>> eqs = reaching_defs_constraint_gen([i0, i1])
-        >>> (sol, num_evals) = abstract_interp_worklist(eqs)
+        >>> (sol, num_evals) = abstract_interp(eqs)
         >>> f"OUT_0: {sorted(sol['OUT_0'])}"
         "OUT_0: [('c', 0)]"
     """
